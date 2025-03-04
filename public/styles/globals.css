@@ -1,0 +1,87 @@
+@import "./components.css"; /* Importe les styles des composants */
+@import "./variables.css"; /* Importe les variables CSS */
+
+/* Styles CSS initiaux pour retirer certains comportements de navigateur par défaut indésirables */
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-size: 16px;
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+
+  font-family: var(--font-family);
+}
+
+input,
+textarea,
+button,
+select {
+  font: inherit;
+  font-size: 1rem;
+}
+
+img,
+svg,
+video,
+iframe,
+picture,
+canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  flex-shrink: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  overflow-wrap: break-word;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.heading {
+  font-weight: 500;
+}
+
+p,
+.subtext {
+  font-size: 15px;
+}
+
+a {
+  color: inherit;
+}
+
+code,
+pre {
+  font-size: 1rem;
+}
