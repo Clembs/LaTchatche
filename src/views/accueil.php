@@ -16,4 +16,4 @@
   }
 </style>
 
-<?php $head .= ob_get_clean(); ?>
+<?php $head = !isset($head) ? ob_get_clean() : $head . ob_get_clean(); ?>
