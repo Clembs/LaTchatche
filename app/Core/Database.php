@@ -1,4 +1,9 @@
 <?php
+
+namespace App\Core;
+
+use \PDO;
+
 class Database
 {
   private static ?Database $instance = null;
@@ -8,7 +13,7 @@ class Database
   {
     try {
       $databaseIni = parse_ini_file(__DIR__ . '/../../config.ini', true)['database'];
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
       die("Erreur lors de la lecture du config.ini : " . $e->getMessage());
     }
 
@@ -24,7 +29,7 @@ class Database
 
       $this->connection = new PDO($dsn, $username, $password);
 
-    } catch (PDOException $e) {
+    } catch (\PDOException $e) {
       die("Erreur lors de la création de la connexion à la base de données : " . $e->getMessage() . json_encode($databaseIni));
     }
   }

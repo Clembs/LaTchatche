@@ -8,7 +8,7 @@
 
 <?php ob_start(); ?>
 
-<style data-file="accueil">
+<style data-file="home">
   main {
     display: grid;
     place-items: center;

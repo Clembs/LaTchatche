@@ -1,10 +1,21 @@
-# Chat - Projet R4.A.10
+# La Tchatche - Projet R4.A.10
 
 Cette application web permet de discuter instantanément avec d'autres utilisateurs.
 
-## Commandes
+## Prérequis
 
-Lancer le serveur PHP pour ouvrir le projet :
+- [PHP](https://www.php.net/downloads.php)
+- [Composer](https://getcomposer.org/download/)
+
+## Installation
+
+Installer les dépendances du projet et préparer l'environnement de développement :
+
+```
+composer install
+```
+
+Lancer le serveur PHP :
 
 ```
 php -S localhost:[port] -t public/
@@ -17,10 +28,10 @@ Le projet utilise une architecture MVC (Modèle-Vue-Contrôleur) :
 - `public/`: Dossier contenant les fichiers accessibles publiquement
 - `public/index.php`: Routeur du projet, accède aux différentes pages
 - `public/globals.css`: Feuilles de style globales
-- `src/`: Dossier contenant les fichiers PHP
-- `src/controllers/`: Dossier contenant les contrôleurs (logique métier)
-- `src/models/`: Dossier contenant les modèles (accès à la base de données)
-- `src/views/`: Dossier contenant les vues (affichage)
+- `app/`: Dossier contenant les fichiers PHP
+- `app/Controllers/`: Dossier contenant les contrôleurs (logique métier)
+- `app/Models/`: Dossier contenant les modèles (accès à la base de données)
+- `app/Views/`: Dossier contenant les vues (affichage)
 
 ## Configuration
 
