@@ -16,6 +16,8 @@ $completeTitle = "{$title} | La Tchatche";
 
   <!-- Chargement du CSS -->
   <link rel="stylesheet" href="/styles/globals.css" />
+  <!-- Chargement des scripts -->
+  <script src="/scripts/jquery-3.7.1.min.js"></script>
 
   <!-- Ajout des tags méta, de l'OpenGraph, du titre, etc (le SEO) -->
   <title><?= $completeTitle ?></title>
