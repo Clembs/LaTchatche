@@ -90,7 +90,7 @@ class Message extends Model
       WHERE messages.channel_id = :channel_id
       AND messages.author_id = users.id
       ORDER BY messages.created_at DESC
-      LIMIT 20 OFFSET :offset"
+      LIMIT 30 OFFSET :offset"
     );
     $offset = ($page - 1) * 10;
     // J'ignore pourquoi je dois utiliser bindParam au lieu d'execute
