@@ -1,10 +1,10 @@
 <?php ob_start(); ?>
 
 <main>
-  Coucou le monde (et Gérald 👀)
+  hello la tchatche
 </main>
 
-<?php $content = ob_get_clean(); ?>
+<?php $slot = ob_get_clean(); ?>
 
 <?php ob_start(); ?>
 

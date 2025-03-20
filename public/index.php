@@ -1,16 +1,25 @@
 <?php
+// Routeur basique
 
 require '../vendor/autoload.php';
-use App\Controllers\HomeController;
+use App\Controllers\ChatController;
 
-// Routeur basique
-// Les liens se font vers /?page=nom-de-la-page
-$_GET['page'] ??= 'accueil';
+// On retire le premier et dernier slash puis on explose l'URI en parties
+$cleanUri = trim(rtrim($_SERVER['REQUEST_URI'], '/'), '/');
+$uriParts = explode('/', $cleanUri);
 
-switch ($_GET['page']) {
-  case 'accueil':
-    HomeController::home();
+switch ($uriParts[0]) {
+  case '':
+  case 'chats': {
+    $channelId = $uriParts[1];
+
+    if (isset($channelId) && $channelId !== '') {
+      ChatController::channel((int) $channelId);
+    } else {
+      ChatController::home();
+    }
     break;
+  }
   default:
     require_once '../app/Views/404.php';
 }
