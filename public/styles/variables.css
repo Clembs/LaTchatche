@@ -1,4 +1,13 @@
 /* Déclaration des variables CSS */
 :root {
   --font-family: system-ui, sans-serif;
+
+  --color-background: #ffffff;
+  --color-surface: #f0f0f0;
+  --color-surface-variant: #e9e9e9;
+  --color-outline: #d5d5d5;
+  --color-on-surface: #1b1b1b;
+  --color-on-surface-variant: #5e5e5e;
+  --color-primary: #0552f0;
+  --color-on-primary: #ffffff;
 }
