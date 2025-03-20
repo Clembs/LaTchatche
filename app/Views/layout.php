@@ -4,7 +4,7 @@ Ce fichier est inclus dans toutes les pages de l'application.
 -->
 
 <?php
-$completeTitle = "{$title} | Chat";
+$completeTitle = "{$title} | La Tchatche";
 ?>
 
 <!DOCTYPE html>
