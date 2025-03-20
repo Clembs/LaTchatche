@@ -29,8 +29,10 @@ class Controller
 
     // On regarde récursivement s'il y a un layout dans les dossiers où se trouve la vue
     // et on le requiert si on le trouve
-    for ($i = count($viewParts) - 1; $i > 0; $i--) {
-      $layoutPath = dirname(__DIR__) . "/Views/{$viewParts[$i]}/layout.php";
+    for ($i = count($viewParts) - 2; $i >= 0; $i--) {
+      $currentPath = implode('/', array_slice($viewParts, 0, $i + 1));
+
+      $layoutPath = dirname(__DIR__) . "/Views/{$currentPath}/layout.php";
 
       if (file_exists($layoutPath)) {
         require $layoutPath;
