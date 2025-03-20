@@ -71,11 +71,10 @@ class Message extends Model
    * Renvoie une liste de messages pour un ID de salon donné
    * @return Message[]
    */
-  public static function findAllForChannel(int $channelId, int $page = 1): array
+  public static function findAllForChannel(int $channelId, ?int $afterMessageId): array
   {
     $pdo = Database::getPDO();
-    $query = $pdo->prepare(
-      "SELECT
+    $sql = "SELECT
       messages.id AS message_id,
       messages.type AS message_type,
       messages.content AS message_content,
@@ -88,16 +87,25 @@ class Message extends Model
       users.created_at AS user_created_at
       FROM messages, users
       WHERE messages.channel_id = :channel_id
-      AND messages.author_id = users.id
-      ORDER BY messages.created_at DESC
-      LIMIT 30 OFFSET :offset"
-    );
-    $offset = ($page - 1) * 10;
-    // J'ignore pourquoi je dois utiliser bindParam au lieu d'execute
-    // mais execute fonctionnait pas :(
-    $query->bindParam('channel_id', $channelId);
-    $query->bindParam('offset', $offset, \PDO::PARAM_INT);
-    $query->execute();
+      AND messages.author_id = users.id";
+
+    if ($afterMessageId) {
+      $sql .= " AND messages.created_at > ( SELECT created_at FROM messages WHERE id = :after_message_id )";
+    }
+
+    $sql .= " ORDER BY messages.created_at DESC";
+
+    $query = $pdo->prepare($sql);
+
+    if ($afterMessageId) {
+      $query->execute([
+        'channel_id' => $channelId,
+        'after_message_id' => $afterMessageId,
+      ]);
+    } else {
+      $query->execute(['channel_id' => $channelId]);
+    }
+
     $res = $query->fetchAll();
 
     return array_reduce(
