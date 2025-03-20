@@ -46,7 +46,7 @@ abstract class Controller
   /**
    * Envoie une réponse JSON au client
    * 
-   * @param array $data Les données à encoder en JSON
+   * @param \JsonSerializable|array $data Les données à encoder en JSON
    */
   public static function json($data, $code = 200)
   {

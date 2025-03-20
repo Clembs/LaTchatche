@@ -11,10 +11,6 @@ abstract class Model implements \JsonSerializable
    */
   abstract public static function findAll(): array;
 
-  abstract public static function create(self $data): self;
-
-  abstract public static function update(self $data): void;
-
   abstract public static function delete(int $id): void;
 
   abstract public function jsonSerialize(): array;

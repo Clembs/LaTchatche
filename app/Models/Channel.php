@@ -29,7 +29,7 @@ class Channel extends Model
     return new Channel(
       id: $res['id'],
       name: $res['name'],
-      createdAt: new \DateTime($res['date_rencontre']),
+      createdAt: new \DateTime($res['created_at']),
       public: $res['public'],
       ownerId: $res['owner_id'],
     );
@@ -49,10 +49,10 @@ class Channel extends Model
     return array_reduce(
       $res,
       function ($acc, $channel) {
-        $acc[$channel['id_rencontre']] = new Channel(
+        $acc[$channel['id']] = new Channel(
           id: $channel['id'],
           name: $channel['name'],
-          createdAt: new \DateTime($channel['date_rencontre']),
+          createdAt: new \DateTime($channel['created_at']),
           public: $channel['public'],
           ownerId: $channel['owner_id'],
         );

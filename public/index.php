@@ -14,6 +14,11 @@ switch ($uriParts[0]) {
     $channelId = $uriParts[1];
 
     if (isset($channelId) && $channelId !== '') {
+      if (isset($uriParts[2]) && $uriParts[2] === 'send-message' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        ChatController::sendMessage((int) $channelId, $_POST);
+        break;
+      }
+
       ChatController::channel((int) $channelId);
     } else {
       ChatController::home();

@@ -10,7 +10,7 @@
 
 <div class="content">
   <aside>
-    <h2>Channels</h2>
+    <h1>Discussions</h1>
     <ul>
       <?php foreach ($channels as $channel): ?>
         <li>
@@ -38,8 +38,9 @@
   }
 
   aside {
-    background-color: #f0f0f0;
+    background-color: var(--color-surface);
     padding: 1rem;
+    border-right: 1px solid var(--color-outline);
   }
 
   ul {
@@ -58,7 +59,6 @@
 
   a:hover {
     text-decoration: underline;
-
   }
 </style>
 
