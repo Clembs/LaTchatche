@@ -7,7 +7,7 @@ namespace App\Core;
  * 
  * @package App\Core
  */
-class Controller
+abstract class Controller
 {
   /**
    * Rend une vue PHP avec les données fournies
@@ -53,5 +53,14 @@ class Controller
     http_response_code($code);
     header('Content-Type: application/json;');
     echo json_encode($data);
+  }
+
+  /**
+   * Shows a 404 error page
+   */
+  public static function notFound()
+  {
+    http_response_code(404);
+    require_once dirname(__DIR__) . '/Views/404.php';
   }
 }
