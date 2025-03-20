@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use App\Core\Database;
 use App\Core\Model;
 
 enum MessageType: string
@@ -25,10 +26,19 @@ class Message extends Model
 
   public static function findById(int $id): Message
   {
-    $query = self::$pdo->prepare('SELECT * FROM messages WHERE id = :id');
+    $pdo = Database::getPDO();
+    $query = $pdo->prepare('SELECT * FROM messages WHERE id = :id');
     $query->execute(['id' => $id]);
+    $res = $query->fetch();
 
-    return $query->fetchObject(self::class);
+    return new Message(
+      id: $res['id'],
+      type: MessageType::tryFrom($res['type']),
+      content: $res['content'],
+      createdAt: new \DateTime($res['created_at']),
+      authorId: $res['author_id'],
+      channelId: $res['channel_id'],
+    );
   }
 
   /**
@@ -36,9 +46,25 @@ class Message extends Model
    */
   public static function findAll(): array
   {
-    $query = self::$pdo->query('SELECT * FROM messages');
+    $pdo = Database::getPDO();
+    $query = $pdo->query('SELECT * FROM messages');
+    $res = $query->fetchAll();
 
-    return $query->fetchAll(\PDO::FETCH_CLASS, self::class);
+    return array_reduce(
+      $res,
+      function ($acc, $message) {
+        $acc[$message['id']] = new Message(
+          id: $message['id'],
+          type: MessageType::tryFrom($message['type']),
+          content: $message['content'],
+          createdAt: new \DateTime($message['created_at']),
+          authorId: $message['author_id'],
+          channelId: $message['channel_id'],
+        );
+        return $acc;
+      },
+      []
+    );
   }
 
   public static function create(Model $data): Message
@@ -47,7 +73,8 @@ class Message extends Model
       throw new \InvalidArgumentException('Invalid data type');
     }
 
-    $query = self::$pdo->prepare(
+    $pdo = Database::getPDO();
+    $query = $pdo->prepare(
       "INSERT INTO messages
       (type, content, created_at, author_id, channel_id)
       VALUES 
@@ -62,7 +89,7 @@ class Message extends Model
     ]);
 
     return new Message(
-      id: (int) self::$pdo->lastInsertId(),
+      id: (int) $pdo->lastInsertId(),
       type: $data->type,
       content: $data->content,
       createdAt: new \DateTime(),
@@ -77,7 +104,8 @@ class Message extends Model
       throw new \InvalidArgumentException('Invalid data type');
     }
 
-    $query = self::$pdo->prepare(
+    $pdo = Database::getPDO();
+    $query = $pdo->prepare(
       "UPDATE messages
       SET content = :content
       WHERE id = :id"
@@ -91,7 +119,8 @@ class Message extends Model
 
   public static function delete(int $id): void
   {
-    $query = self::$pdo->prepare('DELETE FROM messages WHERE id = :id');
+    $pdo = Database::getPDO();
+    $query = $pdo->prepare('DELETE FROM messages WHERE id = :id');
     $query->execute(['id' => $id]);
   }
 

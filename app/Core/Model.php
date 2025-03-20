@@ -4,9 +4,7 @@ namespace App\Core;
 
 abstract class Model implements \JsonSerializable
 {
-  protected static \PDO $pdo = Database::getPDO();
-
-  abstract public function findById(int $id): self;
+  abstract public static function findById(int $id): self;
 
   /**
    * @return self[]

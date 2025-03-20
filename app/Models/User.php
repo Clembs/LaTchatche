@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use App\Core\Database;
 use App\Core\Model;
 
 class User extends Model
@@ -15,11 +16,17 @@ class User extends Model
 
   public static function findById(int $id): User
   {
-
-    $query = self::$pdo->prepare('SELECT * FROM users WHERE id = :id');
+    $pdo = Database::getPDO();
+    $query = $pdo->prepare('SELECT * FROM users WHERE id = :id');
     $query->execute(['id' => $id]);
+    $res = $query->fetch();
 
-    return $query->fetchObject(self::class);
+    return new User(
+      id: $res['id'],
+      username: $res['username'],
+      password: $res['password'],
+      createdAt: new \DateTime($res['created_at']),
+    );
   }
 
   /**
@@ -28,9 +35,23 @@ class User extends Model
   public static function findAll(): array
   {
 
-    $query = self::$pdo->query('SELECT * FROM users');
+    $pdo = Database::getPDO();
+    $query = $pdo->query('SELECT * FROM users');
+    $res = $query->fetchAll();
 
-    return $query->fetchAll(\PDO::FETCH_CLASS, self::class);
+    return array_reduce(
+      $res,
+      function ($acc, $user) {
+        $acc[$user['id']] = new User(
+          id: $user['id'],
+          username: $user['username'],
+          password: $user['password'],
+          createdAt: new \DateTime($user['created_at']),
+        );
+        return $acc;
+      },
+      []
+    );
   }
 
   public static function create(Model $data): User
@@ -40,14 +61,15 @@ class User extends Model
     }
 
 
-    $query = self::$pdo->prepare('INSERT INTO users (username, password) VALUES (:username, :password)');
+    $pdo = Database::getPDO();
+    $query = $pdo->prepare('INSERT INTO users (username, password) VALUES (:username, :password)');
     $query->execute([
       'username' => $data->username,
       'password' => password_hash($data->password, PASSWORD_DEFAULT),
     ]);
 
     return new User(
-      id: (int) self::$pdo->lastInsertId(),
+      id: (int) $pdo->lastInsertId(),
       username: $data->username,
       password: $data->password,
       createdAt: new \DateTime(),
@@ -60,7 +82,8 @@ class User extends Model
       throw new \InvalidArgumentException('Invalid data type');
     }
 
-    $query = self::$pdo->prepare(
+    $pdo = Database::getPDO();
+    $query = $pdo->prepare(
       "UPDATE users
       SET username = :username, password = :password
       WHERE id = :id"
@@ -76,7 +99,8 @@ class User extends Model
   public static function delete(int $id): void
   {
 
-    $query = self::$pdo->prepare('DELETE FROM users WHERE id = :id');
+    $pdo = Database::getPDO();
+    $query = $pdo->prepare('DELETE FROM users WHERE id = :id');
     $query->execute(['id' => $id]);
   }
 

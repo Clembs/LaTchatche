@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use App\Core\Database;
 use App\Core\Model;
 
 class Channel extends Model
@@ -16,20 +17,45 @@ class Channel extends Model
 
   public static function findById(int $id): Channel
   {
-    $query = self::$pdo->prepare('SELECT * FROM channels WHERE id = :id');
+    $pdo = Database::getPDO();
+    $query = $pdo->prepare('SELECT * FROM channels WHERE id = :id');
     $query->execute(['id' => $id]);
+    $res = $query->fetch();
 
-    return $query->fetchObject(self::class);
+    return new Channel(
+      id: $res['id'],
+      name: $res['name'],
+      createdAt: new \DateTime($res['date_rencontre']),
+      public: $res['public'],
+      ownerId: $res['owner_id'],
+    );
   }
 
   /**
+   * Fetch all public channels
    * @return Channel[]
    */
   public static function findAll(): array
   {
-    $query = self::$pdo->query('SELECT * FROM channels');
+    $pdo = Database::getPDO();
+    $query = $pdo->query('SELECT * FROM channels WHERE public = true');
 
-    return $query->fetchAll(\PDO::FETCH_CLASS, self::class);
+    $res = $query->fetchAll();
+
+    return array_reduce(
+      $res,
+      function ($acc, $channel) {
+        $acc[$channel['id_rencontre']] = new Channel(
+          id: $channel['id'],
+          name: $channel['name'],
+          createdAt: new \DateTime($channel['date_rencontre']),
+          public: $channel['public'],
+          ownerId: $channel['owner_id'],
+        );
+        return $acc;
+      },
+      []
+    );
   }
 
   public static function create(Model $data): Channel
@@ -38,7 +64,8 @@ class Channel extends Model
       throw new \InvalidArgumentException('Invalid data type');
     }
 
-    $query = self::$pdo->prepare(
+    $pdo = Database::getPDO();
+    $query = $pdo->prepare(
       "INSERT INTO channels
       (name, public, owner_id)
       VALUES 
@@ -51,7 +78,7 @@ class Channel extends Model
     ]);
 
     return new Channel(
-      id: (int) self::$pdo->lastInsertId(),
+      id: (int) $pdo->lastInsertId(),
       name: $data->name,
       createdAt: new \DateTime(),
       public: $data->public,
@@ -65,7 +92,8 @@ class Channel extends Model
       throw new \InvalidArgumentException('Invalid data type');
     }
 
-    $query = self::$pdo->prepare(
+    $pdo = Database::getPDO();
+    $query = $pdo->prepare(
       "UPDATE channels
       SET name = :name, public = :public
       WHERE id = :id"
@@ -80,7 +108,8 @@ class Channel extends Model
 
   public static function delete(int $id): void
   {
-    $query = self::$pdo->prepare('DELETE FROM channels WHERE id = :id');
+    $pdo = Database::getPDO();
+    $query = $pdo->prepare('DELETE FROM channels WHERE id = :id');
     $query->execute(['id' => $id]);
   }
 

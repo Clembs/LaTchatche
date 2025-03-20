@@ -27,7 +27,14 @@ class Database
 
       $dsn = "$driver:host=$host;port=$port;dbname=$database";
 
-      $this->connection = new PDO($dsn, $username, $password);
+      $options = [
+        PDO::ATTR_PERSISTENT => true,
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::MYSQL_ATTR_FOUND_ROWS => true
+      ];
+
+      $this->connection = new PDO($dsn, $username, $password, $options);
 
     } catch (\PDOException $e) {
       die("Erreur lors de la création de la connexion à la base de données : " . $e->getMessage() . json_encode($databaseIni));

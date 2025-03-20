@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use App\Core\Database;
 use App\Core\Model;
 
 class Member extends Model
@@ -14,18 +15,30 @@ class Member extends Model
 
   public static function findById(int $id): Member
   {
-    $query = self::$pdo->prepare('SELECT * FROM members WHERE id = :id');
+    $pdo = Database::getPDO();
+    $query = $pdo->prepare('SELECT * FROM members WHERE id = :id');
     $query->execute(['id' => $id]);
+    $res = $query->fetch();
 
-    return $query->fetchObject(self::class);
+    return new Member(
+      id: $res['id'],
+      userId: $res['user_id'],
+      channelId: $res['channel_id'],
+    );
   }
 
   public static function findByUserChannel(int $userId, int $channelId): Member
   {
-    $query = self::$pdo->prepare('SELECT * FROM members WHERE user_id = :userId AND channel_id = :channelId');
+    $pdo = Database::getPDO();
+    $query = $pdo->prepare('SELECT * FROM members WHERE user_id = :userId AND channel_id = :channelId');
     $query->execute(['userId' => $userId, 'channelId' => $channelId]);
+    $res = $query->fetch();
 
-    return $query->fetchObject(self::class);
+    return new Member(
+      id: $res['id'],
+      userId: $res['user_id'],
+      channelId: $res['channel_id'],
+    );
   }
 
   /**
@@ -33,17 +46,43 @@ class Member extends Model
    */
   public static function findAll(): array
   {
-    $query = self::$pdo->query('SELECT * FROM members');
+    $pdo = Database::getPDO();
+    $query = $pdo->query('SELECT * FROM members');
+    $res = $query->fetchAll();
 
-    return $query->fetchAll(\PDO::FETCH_CLASS, self::class);
+    return array_reduce(
+      $res,
+      function ($acc, $member) {
+        $acc[$member['id']] = new Member(
+          id: $member['id'],
+          userId: $member['user_id'],
+          channelId: $member['channel_id'],
+        );
+        return $acc;
+      },
+      []
+    );
   }
 
   public static function findAllByChannel(int $channelId): array
   {
-    $query = self::$pdo->prepare('SELECT * FROM members WHERE channel_id = :channelId');
+    $pdo = Database::getPDO();
+    $query = $pdo->prepare('SELECT * FROM members WHERE channel_id = :channelId');
     $query->execute(['channelId' => $channelId]);
+    $res = $query->fetchAll();
 
-    return $query->fetchAll(\PDO::FETCH_CLASS, self::class);
+    return array_reduce(
+      $res,
+      function ($acc, $member) {
+        $acc[$member['id']] = new Member(
+          id: $member['id'],
+          userId: $member['user_id'],
+          channelId: $member['channel_id'],
+        );
+        return $acc;
+      },
+      []
+    );
   }
 
   public static function create(Model $data): Member
@@ -52,7 +91,8 @@ class Member extends Model
       throw new \InvalidArgumentException('Invalid data type');
     }
 
-    $query = self::$pdo->prepare(
+    $pdo = Database::getPDO();
+    $query = $pdo->prepare(
       "INSERT INTO members
       (user_id, channel_id)
       VALUES 
@@ -64,19 +104,21 @@ class Member extends Model
     ]);
 
     return new Member(
-      id: (int) self::$pdo->lastInsertId(),
+      id: (int) $pdo->lastInsertId(),
       userId: $data->userId,
       channelId: $data->channelId,
     );
   }
 
+  // A member object can't be updated
   public static function update(Model $data): void
   {
   }
 
   public static function delete(int $id): void
   {
-    $query = self::$pdo->prepare('DELETE FROM members WHERE id = :id');
+    $pdo = Database::getPDO();
+    $query = $pdo->prepare('DELETE FROM members WHERE id = :id');
     $query->execute(['id' => $id]);
   }
 
