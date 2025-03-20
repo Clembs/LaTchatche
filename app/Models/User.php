@@ -58,6 +58,25 @@ class User extends Model
     );
   }
 
+  public static function findByUsernamePassword(string $username, string $password): ?User
+  {
+    $pdo = Database::getPDO();
+    $query = $pdo->prepare('SELECT * FROM users WHERE username = :username');
+    $query->execute(['username' => $username]);
+    $res = $query->fetch();
+
+    if (!$res || !password_verify($password, $res['password'])) {
+      return null;
+    }
+
+    return new User(
+      id: $res['id'],
+      username: $res['username'],
+      password: $res['password'],
+      createdAt: new \DateTime($res['created_at']),
+    );
+  }
+
   public static function create(Model $data): User
   {
     if (!($data instanceof self)) {
