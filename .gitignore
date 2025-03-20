@@ -3,3 +3,9 @@ config.ini
 
 # Composer
 /vendor/
+
+# IDE
+.vscode
+
+# Node
+/node_modules/
