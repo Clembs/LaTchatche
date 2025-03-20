@@ -28,6 +28,12 @@ $completeTitle = "{$title} | La Tchatche";
   <link rel="canonical" href=<?= $_SERVER['REQUEST_URI'] ?> />
   <!-- TODO: ajouter un favicon -->
 
+  <!-- 
+  Corrigé pour le "flash of unstyled content" sur Firefox
+  cf. https://stackoverflow.com/a/57888310
+  -->
+  <script>0</script>
+
   <!-- Ajout de l'HTML contenu dans la variable globale $head -->
   <?= $head ?>
 </head>
