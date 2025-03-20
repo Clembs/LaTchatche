@@ -3,6 +3,7 @@
 /**
  * @var \App\Models\Channel $channel
  * @var \App\Models\Message[] $messages
+ * @var \App\Models\User $currentUser
  */
 
 // les messages sont regroupés par auteur lorsqu'ils se suivent
@@ -28,10 +29,10 @@ foreach ($messages as $message) {
 
   <div class="message-groups">
     <?php foreach ($groupedMessages as $messages): ?>
-      <div class="message-group <?= $messages[0]->author->id === 1 ? 'me' : 'not-me' ?>">
-        <?php foreach ($messages as $index => $message): ?>
-          <?php include 'Message.php'; ?>
-        <?php endforeach; ?>
+      <div class="message-group <?= $messages[0]->author->id === $currentUser->id ? 'me' : 'not-me' ?>">
+        <?php foreach ($messages as $index => $message) {
+          include 'Message.php';
+        } ?>
       </div>
     <?php endforeach; ?>
   </div>

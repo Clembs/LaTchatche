@@ -6,6 +6,7 @@ use App\Core\Controller;
 use App\Models\Channel;
 use App\Models\Message;
 use App\Models\MessageType;
+use App\Models\Session;
 use App\Models\User;
 
 class ChatController extends Controller
@@ -15,9 +16,16 @@ class ChatController extends Controller
    */
   public static function home(): void
   {
+    $currentUser = Session::getCurrentUser();
+
+    if (!$currentUser) {
+      header('Location: /login');
+      return;
+    }
+
     $channels = Channel::findAll();
 
-    self::render('chat/home', 'Accueil', ['channels' => $channels]);
+    self::render('chat/home', 'Accueil', ['channels' => $channels, 'currentUser' => $currentUser]);
   }
 
   /**
@@ -25,32 +33,48 @@ class ChatController extends Controller
    */
   public static function channel(int $id): void
   {
+    $currentUser = Session::getCurrentUser();
+
+    if (!$currentUser) {
+      header('Location: /login');
+      return;
+    }
+
     $channel = Channel::findById($id);
 
     if (!$channel) {
       self::notFound();
       return;
     }
+
     $channels = Channel::findAll();
     $messages = Message::findAllForChannel($channel->id);
 
     self::render('chat/channel', $channel->name, [
       'channel' => $channel,
       'channels' => $channels,
-      'messages' => array_reverse($messages)
+      'messages' => array_reverse($messages),
+      'currentUser' => $currentUser,
     ]);
   }
 
   public static function sendMessage(string $channelId, array $data): void
   {
+    $currentUser = Session::getCurrentUser();
+
+    if (!$currentUser) {
+      header('Location: /login');
+      exit;
+    }
+
+    $authorId = $currentUser->id;
+
     $channel = Channel::findById($channelId);
 
     if (!$channel) {
       self::notFound();
       return;
     }
-
-    $authorId = 1;
 
     try {
       $message = Message::create(

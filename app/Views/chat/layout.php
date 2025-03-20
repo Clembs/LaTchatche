@@ -2,6 +2,7 @@
 
 /**
  * @var \App\Models\Channel[] $channels
+ * @var \App\Models\User $currentUser
  */
 
 ?>
