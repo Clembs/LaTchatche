@@ -2,7 +2,7 @@
 
 const chatbox = $("#chatbox");
 const chatForm = $("#chat-form");
-const messages = $(".messages");
+const messageGroups = $(".message-groups");
 
 // Le fait d'utiliser un formulaire permet d'utiliser l'amélioration progressive
 // Donc on peut quand même envoyer des messages sans JavaScript sur le client
@@ -22,13 +22,21 @@ chatForm.on("submit", (ev) => {
       // on vide la zone de texte
       chatbox.val("");
 
-      messages.append(data);
+      let lastMessageGroup = messageGroups.children().last();
+      if (lastMessageGroup.hasClass("me")) {
+        lastMessageGroup.append(data);
+      } else {
+        lastMessageGroup = $("<div class='message-group me'></div>");
+        lastMessageGroup.append(data);
+        messageGroups.append(lastMessageGroup);
+      }
+
       // on anime le scroll pour descendre
-      messages.animate({
-        scrollTop: messages.prop("scrollHeight"),
+      messageGroups.animate({
+        scrollTop: messageGroups.prop("scrollHeight"),
       });
     },
   });
 });
 
-messages.scrollTop(messages.prop("scrollHeight"));
+messageGroups.scrollTop(messageGroups.prop("scrollHeight"));

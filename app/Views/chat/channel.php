@@ -5,6 +5,18 @@
  * @var \App\Models\Message[] $messages
  */
 
+// les messages sont regroupés par auteur lorsqu'ils se suivent
+// pour les afficher dans des bulles de message groupées
+$groupedMessages = [];
+
+foreach ($messages as $message) {
+  if (count($groupedMessages) === 0 || $groupedMessages[count($groupedMessages) - 1][0]->author->id !== $message->author->id) {
+    $groupedMessages[] = [$message];
+  } else {
+    $groupedMessages[count($groupedMessages) - 1][] = $message;
+  }
+}
+
 ?>
 
 <?php ob_start(); ?>
@@ -14,11 +26,14 @@
     <h2>#<?= $channel->name ?></h2>
   </div>
 
-  <div class="messages">
-    <?php foreach ($messages as $message):
-      // On inclut le composant de message
-      include 'Message.php';
-    endforeach; ?>
+  <div class="message-groups">
+    <?php foreach ($groupedMessages as $messages): ?>
+      <div class="message-group <?= $messages[0]->author->id === 1 ? 'me' : 'not-me' ?>">
+        <?php foreach ($messages as $index => $message): ?>
+          <?php include 'Message.php'; ?>
+        <?php endforeach; ?>
+      </div>
+    <?php endforeach; ?>
   </div>
 
   <form id="chat-form" method="post" action="/chats/<?= $channel->id ?>/send-message">
@@ -46,7 +61,7 @@
     border-bottom: 1px solid var(--color-outline);
   }
 
-  .messages {
+  .message-groups {
     padding: 1rem 1rem 0 1rem;
     flex: 1;
     overflow-y: scroll;
@@ -55,26 +70,69 @@
     gap: 0.5rem;
   }
 
-  .message {
-    width: fit-content;
-    padding: 0.5rem 0.75rem;
-    background-color: var(--color-surface);
-    border-radius: 1rem;
+  .message-group {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.125rem;
+  }
+
+  .message-group.me {
     align-items: flex-end;
   }
 
-  .message.me {
+  .message {
+    display: flex;
+    /* flex-direction: column; */
+    width: fit-content;
+    padding: 0.5rem 0.75rem;
+    gap: 0.5rem;
+    align-items: flex-end;
+    max-width: 50svw;
+    overflow-wrap: break-word;
+    word-break: break-all;
+  }
+
+  .not-me .message {
+    background-color: var(--color-surface);
+    color: var(--color-on-surface);
+    border-top-left-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+    border-top-right-radius: 1.5rem;
+    border-bottom-right-radius: 1.5rem;
+  }
+
+  .message:first-child {
+    border-top-left-radius: 1.5rem;
+  }
+
+  .message:last-child {
+    border-bottom-left-radius: 1.5rem;
+  }
+
+  .me .message {
     background-color: var(--color-primary);
     color: var(--color-on-primary);
-    margin-left: auto;
+    /* margin-left: auto; */
+    border-top-left-radius: 1.5rem;
+    border-bottom-left-radius: 1.5rem;
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+  }
+
+  .me .message:first-child {
+    border-top-right-radius: 1.5rem;
+  }
+
+  .me .message:last-child {
+    border-bottom-right-radius: 1.5rem;
   }
 
   .message .author,
   .message time {
     font-size: 0.75rem;
+    user-select: none;
+    opacity: 0.75;
+    white-space: nowrap;
   }
 
   form {

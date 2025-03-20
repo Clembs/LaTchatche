@@ -7,7 +7,7 @@
 
 ?>
 
-<div class="message <?= $message->author->id === 1 ? 'me' : '' ?>">
+<div class="message">
   <!-- <?= htmlspecialchars($message->author->username) ?> -->
   <?= htmlspecialchars($message->content) ?>
   <time datetime="<?= $message->createdAt->format('Y-m-d H:i:s') ?>">
