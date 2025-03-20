@@ -4,7 +4,7 @@ namespace App\Core;
 
 abstract class Model implements \JsonSerializable
 {
-  abstract public static function findById(int $id): self;
+  abstract public static function findById(int $id): ?self;
 
   /**
    * @return self[]

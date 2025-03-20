@@ -14,12 +14,16 @@ class User extends Model
   ) {
   }
 
-  public static function findById(int $id): User
+  public static function findById(int $id): ?User
   {
     $pdo = Database::getPDO();
     $query = $pdo->prepare('SELECT * FROM users WHERE id = :id');
     $query->execute(['id' => $id]);
     $res = $query->fetch();
+
+    if (!$res) {
+      return null;
+    }
 
     return new User(
       id: $res['id'],

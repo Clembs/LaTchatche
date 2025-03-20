@@ -13,12 +13,16 @@ class Member extends Model
   ) {
   }
 
-  public static function findById(int $id): Member
+  public static function findById(int $id): ?Member
   {
     $pdo = Database::getPDO();
     $query = $pdo->prepare('SELECT * FROM members WHERE id = :id');
     $query->execute(['id' => $id]);
     $res = $query->fetch();
+
+    if (!$res) {
+      return null;
+    }
 
     return new Member(
       id: $res['id'],
@@ -27,12 +31,16 @@ class Member extends Model
     );
   }
 
-  public static function findByUserChannel(int $userId, int $channelId): Member
+  public static function findByUserChannel(int $userId, int $channelId): ?Member
   {
     $pdo = Database::getPDO();
     $query = $pdo->prepare('SELECT * FROM members WHERE user_id = :userId AND channel_id = :channelId');
     $query->execute(['userId' => $userId, 'channelId' => $channelId]);
     $res = $query->fetch();
+
+    if (!$res) {
+      return null;
+    }
 
     return new Member(
       id: $res['id'],
