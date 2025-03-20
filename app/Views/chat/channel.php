@@ -22,7 +22,7 @@ foreach ($messages as $message) {
 
 <?php ob_start(); ?>
 
-<main>
+<main data-channel-id="<?= $channel->id ?>">
   <div class="header">
     <h2>#<?= $channel->name ?></h2>
   </div>
@@ -43,7 +43,7 @@ foreach ($messages as $message) {
   </form>
 </main>
 
-<script src="/scripts/send-message.js"></script>
+<script src="/scripts/channel-chats.js"></script>
 
 <?php $slot = ob_get_clean(); ?>
 

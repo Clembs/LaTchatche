@@ -3,11 +3,13 @@
 /**
  * Composant de message pour le chat.
  * @var \App\Models\Message $message
+ * @var \App\Models\User $currentUser
  */
 
 ?>
 
-<div class="message">
+<div class="message" data-message-id="<?= $message->id ?>"
+  data-me="<?= $message->author->id === $currentUser->id ? 'true' : 'false' ?>">
   <!-- <?= htmlspecialchars($message->author->username) ?> -->
   <?= htmlspecialchars($message->content) ?>
   <time datetime="<?= $message->createdAt->format('Y-m-d H:i:s') ?>">

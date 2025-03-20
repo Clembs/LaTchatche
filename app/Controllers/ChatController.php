@@ -48,7 +48,7 @@ class ChatController extends Controller
     }
 
     $channels = Channel::findAll();
-    $messages = Message::findAllForChannel($channel->id);
+    $messages = Message::findAllForChannel($channel->id, null);
 
     self::render('chat/channel', $channel->name, [
       'channel' => $channel,
@@ -56,6 +56,33 @@ class ChatController extends Controller
       'messages' => array_reverse($messages),
       'currentUser' => $currentUser,
     ]);
+  }
+
+  /**
+   * Récupère les derniers messages pour un salon donné et les renvoie en un tableau de chaînes HTML.
+   */
+  public static function getLastMessages(string $channelId, ?string $lastMessageId): void
+  {
+    $currentUser = Session::getCurrentUser();
+
+    if (!$currentUser) {
+      header('Location: /login');
+      exit;
+    }
+
+    $messages = Message::findAllForChannel($channelId, $lastMessageId ? (int) $lastMessageId : null);
+
+    $messageHtmls = [];
+
+    foreach ($messages as $message) {
+      ob_start();
+
+      include __DIR__ . '/../Views/chat/Message.php';
+
+      array_push($messageHtmls, ob_get_clean());
+    }
+
+    self::json($messageHtmls);
   }
 
   public static function sendMessage(string $channelId, array $data): void

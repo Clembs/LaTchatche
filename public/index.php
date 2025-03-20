@@ -23,6 +23,11 @@ switch ($uriParts[0]) {
         break;
       }
 
+      if (isset($uriParts[2]) && $uriParts[2] === 'messages' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+        ChatController::getLastMessages($channelId, $_GET['lastMessageId'] ?? null);
+        break;
+      }
+
       ChatController::channel((int) $channelId);
     } else {
       ChatController::home();
