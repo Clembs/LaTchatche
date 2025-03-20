@@ -1,0 +1,83 @@
+.button {
+  display: flex;
+  gap: 0.5rem;
+  white-space: nowrap;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  border: none;
+  cursor: pointer;
+  height: max-content;
+  user-select: none;
+  text-decoration: none;
+  text-align: center;
+}
+
+.button.primary {
+  background-color: var(--color-primary);
+  color: var(--color-background);
+}
+
+.button.icon {
+  padding: 0.75rem;
+}
+
+.button.inline {
+  display: inline-block;
+  max-width: fit-content;
+}
+
+.button:disabled,
+.button[aria-disabled="true"] {
+  background-color: var(--color-surface-variant);
+  color: var(--color-on-surface-variant);
+  cursor: not-allowed;
+}
+
+.input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.input .label {
+  color: var(--color-on-surface-variant);
+  margin-left: 0.5rem;
+  user-select: none;
+}
+
+.input input,
+.input textarea,
+.input select {
+  border: none;
+  background-color: var(--color-surface-variant);
+  border-radius: 0.5rem;
+  padding: 0.75rem 0.75rem;
+  color: var(--color-on-surface);
+  width: 100%;
+}
+
+.input:has(input),
+.input:has(select) {
+  max-width: 320px;
+}
+
+.input.full {
+  max-width: 100%;
+}
+
+.input textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.input .error {
+  margin-left: 1rem;
+}
+
+.error {
+  color: var(--color-error);
+}
