@@ -17,7 +17,7 @@ class Invite extends Model
   ) {
   }
 
-  public static function findByToken(int $token): ?Invite
+  public static function findByToken(string $token): ?Invite
   {
     $pdo = Database::getPDO();
     $query = $pdo->prepare('SELECT * FROM invites WHERE token = :token');

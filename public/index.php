@@ -57,6 +57,12 @@ switch ($uriParts[0]) {
       break;
     }
   }
+  case 'join': {
+    if (isset($uriParts[1]) && $_SERVER['REQUEST_METHOD'] === 'GET') {
+      ChannelController::joinChannel($uriParts[1]);
+      break;
+    }
+  }
   default:
     require_once '../app/Views/404.php';
 }

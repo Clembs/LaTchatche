@@ -64,6 +64,9 @@ class ChannelController extends Controller
   }
 
 
+  /**
+   * Crée ou récupère une invitation pour un salon.
+   */
   public static function invite(int $channelId): void
   {
     $currentUser = Session::getCurrentUser();
@@ -99,5 +102,39 @@ class ChannelController extends Controller
     }
 
     self::json($invites[0]);
+  }
+
+  /**
+   * Rejoint un salon via une invitation.
+   */
+  public static function joinChannel(string $token): void
+  {
+    $currentUser = Session::getCurrentUser();
+
+    if (!$currentUser) {
+      header('Location: /login');
+      exit;
+    }
+
+    $invite = Invite::findByToken($token);
+
+    if (!$invite) {
+      self::notFound();
+      return;
+    }
+
+    $channel = Channel::findById($invite->channelId);
+
+    if (!$channel) {
+      self::notFound();
+      return;
+    }
+
+    Member::create(
+      userId: $currentUser->id,
+      channelId: $channel->id
+    );
+
+    header("Location: /chats/{$channel->id}");
   }
 }
