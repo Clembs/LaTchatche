@@ -20,7 +20,7 @@ class Invite extends Model
   public static function findByToken(string $token): ?Invite
   {
     $pdo = Database::getPDO();
-    $query = $pdo->prepare('SELECT * FROM invites WHERE token = :token');
+    $query = $pdo->prepare('SELECT * FROM invites WHERE token = :token AND expires_at > CURRENT_TIMESTAMP');
     $query->execute(['token' => $token]);
     $res = $query->fetch();
 
