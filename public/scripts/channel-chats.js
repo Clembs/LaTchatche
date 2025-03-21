@@ -81,6 +81,8 @@ setInterval(() => {
     .last()
     .data("message-id");
 
+  if (!lastMessageId) return;
+
   const fetchUrl = `/chats/${channelId}/messages?lastMessageId=${lastMessageId}`;
 
   $.ajax({
