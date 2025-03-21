@@ -2,19 +2,31 @@
 :root {
   --font-family: system-ui, sans-serif;
 
-  --color-background: #ffffff;
-  --color-surface: #f0f0f0;
-  --color-surface-variant: #dedede;
   --color-outline: #d5d5d5;
+
+  --color-surface: #f0f0f0;
+  --color-surface-light: #ffffff;
+  --color-surface-variant: #dedede;
+
   --color-on-surface: #1b1b1b;
-  --color-on-surface-variant: #000000;
   --color-on-surface-light: #5e5e5e;
+  --color-on-surface-variant: #000000;
+
   --color-primary: #2c6bed;
-  --color-on-primary: #ffffff;
   --color-primary-light: #a3bff9;
+  --color-primary-variant: #0645c5;
+
+  --color-on-primary: #ffffff;
   --color-on-primary-light: #1b1b1b;
-  --color-primary-variant: #0552f0;
   --color-on-primary-variant: #ffffff;
-  --color-error: #ff0000;
+
+  --color-success: #009230;
+  --color-success-light: #96d0a1;
+  --color-success-variant: #007b15;
+
+  --color-error: #c94061;
+  --color-error-light: #f2a8b2;
+  --color-error-variant: #af254c;
+
   --color-on-error: #ffffff;
 }

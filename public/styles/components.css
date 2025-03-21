@@ -14,24 +14,40 @@
   text-decoration: none;
   text-align: center;
 }
-
-.button.primary {
-  background-color: var(--color-primary);
-  color: var(--color-on-primary);
-}
-
-.button.icon {
-  padding: 0.5rem;
-}
-
 .button:not(.primary):hover {
   background-color: var(--color-surface-variant);
   color: var(--color-on-surface-variant);
 }
 
+.button.primary {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
 .button.primary:hover {
   background-color: var(--color-primary-variant);
   color: var(--color-on-primary-variant);
+}
+
+.button.success {
+  background-color: var(--color-success);
+  color: var(--color-on-primary);
+}
+.button.success:hover {
+  background-color: var(--color-success-variant);
+  color: var(--color-on-primary-variant);
+}
+
+.button.danger {
+  background-color: var(--color-error);
+  color: var(--color-on-primary);
+}
+.button.danger:hover {
+  background-color: var(--color-error-variant);
+  color: var(--color-on-primary-variant);
+}
+
+.button.icon {
+  padding: 0.5rem;
 }
 
 .button.inline {
