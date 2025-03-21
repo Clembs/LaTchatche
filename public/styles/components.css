@@ -17,11 +17,21 @@
 
 .button.primary {
   background-color: var(--color-primary);
-  color: var(--color-background);
+  color: var(--color-on-primary);
 }
 
 .button.icon {
-  padding: 0.75rem;
+  padding: 0.5rem;
+}
+
+.button:not(.primary):hover {
+  background-color: var(--color-surface-variant);
+  color: var(--color-on-surface-variant);
+}
+
+.button.primary:hover {
+  background-color: var(--color-primary-variant);
+  color: var(--color-on-primary-variant);
 }
 
 .button.inline {
