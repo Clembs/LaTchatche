@@ -83,6 +83,7 @@ class ChatController extends Controller
     }
 
     $messages = Message::findAllForChannel($channelId, $lastMessageId ? (int) $lastMessageId : null);
+    $messages = array_reverse($messages);
 
     $messageHtmls = [];
 

@@ -16,7 +16,7 @@
 ### Récupération des messages
 
 - [x] Un script (par exemple recuperer.php) permet l'obtention des messages
-- [ ] Seuls les 10 messages les plus récents sont affichés lors de l'arrivée de l'utilisateur dans la salle de chat
+- [x] Seuls les 10 messages les plus récents sont affichés lors de l'arrivée de l'utilisateur dans la salle de chat
 - [x] Le script d'obtention des messages est appelé via une requête Ajax asynchrone
 - [x] Les messages sont affichés sans doublons
 - [x] Les messages sont rafraîchis sans rechargement de la page

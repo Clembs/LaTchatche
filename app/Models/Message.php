@@ -90,10 +90,15 @@ class Message extends Model
       AND messages.author_id = users.id";
 
     if ($afterMessageId) {
-      $sql .= " AND messages.created_at > ( SELECT created_at FROM messages WHERE id = :after_message_id )";
+      $sql .= " AND messages.id > :after_message_id";
     }
 
-    $sql .= " ORDER BY messages.created_at DESC";
+    $sql .= " ORDER BY messages.id DESC";
+
+    // en chargeant la page, on récupère les 10 derniers messages uniquement
+    if (!$afterMessageId) {
+      $sql .= " LIMIT 10";
+    }
 
     $query = $pdo->prepare($sql);
 
