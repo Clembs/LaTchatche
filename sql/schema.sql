@@ -23,6 +23,15 @@ CREATE TABLE IF NOT EXISTS channels (
   PRIMARY KEY(id),
   FOREIGN KEY (owner_id) REFERENCES users(id)
 );
+CREATE TABLE IF NOT EXISTS invites (
+  id INT AUTO_INCREMENT,
+  channel_id INT NOT NULL,
+  token VARCHAR(255) NOT NULL,
+  expires_at TIMESTAMP NOT NULL,
+  PRIMARY KEY(id),
+  UNIQUE KEY (token),
+  FOREIGN KEY (channel_id) REFERENCES channels(id) ON DELETE CASCADE
+);
 CREATE TABLE IF NOT EXISTS members (
   id INT AUTO_INCREMENT,
   user_id INT NOT NULL,
