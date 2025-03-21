@@ -8,14 +8,14 @@
 
 
 <form action="/login" method="post">
-  <label for="email" class="input full">
+  <label for="username" class="input full">
     <div class="label">
       Nom d'utilisateur
     </div>
     <input type="text" id="username" name="username" required>
   </label>
 
-  <label for="email" class="input full">
+  <label for="password" class="input full">
     <div class="label">
       Mot de passe
     </div>
