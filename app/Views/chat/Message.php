@@ -8,8 +8,7 @@
 
 ?>
 
-<div class="message" data-message-id="<?= $message->id ?>"
-  data-me="<?= $message->author->id === $currentUser->id ? 'true' : 'false' ?>">
+<div class="message" data-message-id="<?= $message->id ?>" data-author-id="<?= $message->author->id ?>">
 
   <?php if ($message->author->id !== $currentUser->id): ?>
     <div class="message-author">

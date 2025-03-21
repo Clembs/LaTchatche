@@ -9,7 +9,7 @@
 
 <?php ob_start() ?>
 
-<div class="content">
+<div class="content" data-user-id="<?= $currentUser->id ?>">
   <aside>
     <h1>Discussions</h1>
     <ul>

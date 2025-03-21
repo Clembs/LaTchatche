@@ -3,24 +3,36 @@
 const chatbox = $("#chatbox");
 const chatForm = $("#chat-form");
 const messageGroups = $(".message-groups");
+/**
+ * L'ID de l'utilisateur connecté
+ * @type {string}
+ */
+const currentUserId = $(".content").data("user-id");
+/**
+ * L'ID du salon actuel
+ * @type {string}
+ */
+const channelId = $("main").data("channel-id");
 
 /**
  * @param {string} messageHtml
  */
 function addMessage(messageHtml) {
-  const isSentFromMe = $(messageHtml).data("me");
-  console.log(isSentFromMe);
+  /**
+   * L'ID de l'auteur du message à ajouter
+   * @type {string}
+   */
+  const messageAuthorId = $(messageHtml).data("author-id");
+  const isFromMe = messageAuthorId === currentUserId;
 
   let lastMessageGroup = messageGroups.children().last();
+  let lastMessage = lastMessageGroup.children().last();
 
   // si le dernier message n'est pas envoyé par le même auteur que le message actuel
   // on crée un nouveau groupe et on l'ajoute aux groupes de messages
-  if (
-    (lastMessageGroup.hasClass("me") && !isSentFromMe) ||
-    (lastMessageGroup.hasClass("not-me") && isSentFromMe)
-  ) {
+  if (lastMessage.data("author-id") !== messageAuthorId) {
     lastMessageGroup = $(
-      `<div class='message-group ${isSentFromMe ? "me" : "not-me"}'></div>`
+      `<div class='message-group ${isFromMe ? "me" : "not-me"}'></div>`
     );
     messageGroups.append(lastMessageGroup);
   }
@@ -60,8 +72,6 @@ chatForm.on("submit", (ev) => {
 messageGroups.scrollTop(messageGroups.prop("scrollHeight"));
 
 const FETCH_INTERVAL = 2000;
-/** @type {string} */
-const channelId = $("main").data("channel-id");
 
 setInterval(() => {
   const lastMessageId = messageGroups
