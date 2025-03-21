@@ -23,7 +23,7 @@ foreach ($messages as $message) {
 <?php ob_start(); ?>
 
 <main data-channel-id="<?= $channel->id ?>">
-  <div class="header">
+  <div class="channel-info">
     <h2>#<?= $channel->name ?></h2>
   </div>
 
@@ -49,14 +49,14 @@ foreach ($messages as $message) {
 
 <?php ob_start(); ?>
 
-<style data-file="home">
+<style data-file="chat/channel">
   main {
     height: 100dvh;
     display: flex;
     flex-direction: column;
   }
 
-  .header {
+  main .channel-info {
     padding: 0.75rem 1rem;
     background-color: var(--color-surface);
     border-bottom: 1px solid var(--color-outline);
@@ -146,9 +146,16 @@ foreach ($messages as $message) {
     white-space: nowrap;
   }
 
+  .me .message time {
+    color: var(--color-primary-light);
+  }
+
+  .not-me .message time {
+    color: var(--color-on-surface-light);
+  }
+
   .message time {
     font-size: 0.75rem;
-    opacity: 0.75;
   }
 
   .message-author {
@@ -156,7 +163,7 @@ foreach ($messages as $message) {
     font-size: 0.9rem;
   }
 
-  form {
+  #chat-form {
     display: flex;
     padding: 0.75rem 1rem;
   }

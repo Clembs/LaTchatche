@@ -8,7 +8,7 @@
 
 <?php ob_start(); ?>
 
-<style data-file="home">
+<style data-file="chat/home">
   main {
     display: grid;
     place-items: center;

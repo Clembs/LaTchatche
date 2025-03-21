@@ -25,7 +25,11 @@ class ChatController extends Controller
 
     $channels = Channel::findAll();
 
-    self::render('chat/home', 'Accueil', ['channels' => $channels, 'currentUser' => $currentUser]);
+    self::render('chat/home', 'Accueil', [
+      'channel' => null,
+      'channels' => $channels,
+      'currentUser' => $currentUser
+    ]);
   }
 
   /**
