@@ -4,13 +4,20 @@ namespace App\Models;
 use App\Core\Database;
 use App\Core\Model;
 
+enum ChannelType: string
+{
+  case public = "public";
+  case private = "private";
+  case direct = "direct";
+}
+
 class Channel extends Model
 {
   public function __construct(
     public int $id,
     public string $name,
     public \DateTime $createdAt,
-    public bool $public,
+    public ChannelType $type,
     public int $ownerId,
   ) {
   }
@@ -30,7 +37,7 @@ class Channel extends Model
       id: $res['id'],
       name: $res['name'],
       createdAt: new \DateTime($res['created_at']),
-      public: $res['public'],
+      type: ChannelType::from($res['type']),
       ownerId: $res['owner_id'],
     );
   }
@@ -53,7 +60,41 @@ class Channel extends Model
           id: $channel['id'],
           name: $channel['name'],
           createdAt: new \DateTime($channel['created_at']),
-          public: $channel['public'],
+          type: ChannelType::from($channel['type']),
+          ownerId: $channel['owner_id'],
+        );
+        return $acc;
+      },
+      []
+    );
+  }
+
+  /**
+   * Fetch all channels a user is a member of
+   * @return Channel[]
+   */
+  public static function findAllForUser(string $userId): array
+  {
+    $pdo = Database::getPDO();
+    $query = $pdo->prepare(
+      "SELECT c.* FROM channels c
+      JOIN members m ON c.id = m.channel_id
+      WHERE m.user_id = :userid"
+    );
+
+    $query->execute([
+      'userid' => $userId,
+    ]);
+    $res = $query->fetchAll();
+
+    return array_reduce(
+      $res,
+      function ($acc, $channel) {
+        $acc[$channel['id']] = new Channel(
+          id: $channel['id'],
+          name: $channel['name'],
+          createdAt: new \DateTime($channel['created_at']),
+          type: ChannelType::from($channel['type']),
           ownerId: $channel['owner_id'],
         );
         return $acc;
@@ -64,49 +105,34 @@ class Channel extends Model
 
   public static function create(
     string $name,
-    bool $public,
+    ChannelType $type,
     int $ownerId
   ): Channel {
     $pdo = Database::getPDO();
     $query = $pdo->prepare(
       "INSERT INTO channels
-      (name, public, owner_id)
+      (name, type, owner_id)
       VALUES 
-      (:name, :public, :owner_id)"
+      (:name, :type, :owner_id)"
     );
     $query->execute([
       'name' => $name,
-      'public' => $public,
+      'type' => $type->value,
       'owner_id' => $ownerId,
     ]);
 
     return new Channel(
       id: (int) $pdo->lastInsertId(),
       name: $name,
+      type: $type,
       createdAt: new \DateTime(),
-      public: $public,
       ownerId: $ownerId,
     );
   }
 
+  // TODO
   public static function update(Model $data): void
   {
-    if (!($data instanceof self)) {
-      throw new \InvalidArgumentException('Invalid data type');
-    }
-
-    $pdo = Database::getPDO();
-    $query = $pdo->prepare(
-      "UPDATE channels
-      SET name = :name, public = :public
-      WHERE id = :id"
-    );
-
-    $query->execute([
-      'id' => $data->id,
-      'name' => $data->name,
-      'public' => $data->public,
-    ]);
   }
 
   public static function delete(int $id): void
@@ -122,7 +148,7 @@ class Channel extends Model
       'id' => $this->id,
       'name' => $this->name,
       'createdAt' => $this->createdAt->format('Y-m-d H:i:s'),
-      'public' => $this->public,
+      'type' => $this->type->value,
       'ownerId' => $this->ownerId,
     ];
   }

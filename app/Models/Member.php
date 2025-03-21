@@ -72,7 +72,10 @@ class Member extends Model
     );
   }
 
-  public static function findAllByChannel(int $channelId): array
+  /**
+   * @return Member[]
+   */
+  public static function findAllForChannel(int $channelId): array
   {
     $pdo = Database::getPDO();
     $query = $pdo->prepare('SELECT * FROM members WHERE channel_id = :channelId');
@@ -93,12 +96,8 @@ class Member extends Model
     );
   }
 
-  public static function create(Model $data): Member
+  public static function create(int $userId, int $channelId): Member
   {
-    if (!($data instanceof self)) {
-      throw new \InvalidArgumentException('Invalid data type');
-    }
-
     $pdo = Database::getPDO();
     $query = $pdo->prepare(
       "INSERT INTO members
@@ -107,14 +106,14 @@ class Member extends Model
       (:userId, :channelId)"
     );
     $query->execute([
-      'userId' => $data->userId,
-      'channelId' => $data->channelId,
+      'userId' => $userId,
+      'channelId' => $channelId,
     ]);
 
     return new Member(
       id: (int) $pdo->lastInsertId(),
-      userId: $data->userId,
-      channelId: $data->channelId,
+      userId: $userId,
+      channelId: $channelId,
     );
   }
 

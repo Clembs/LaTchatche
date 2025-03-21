@@ -4,6 +4,8 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Models\Channel;
+use App\Models\ChannelType;
+use App\Models\Member;
 use App\Models\Message;
 use App\Models\MessageType;
 use App\Models\Session;
@@ -23,7 +25,7 @@ class ChatController extends Controller
       return;
     }
 
-    $channels = Channel::findAll();
+    $channels = Channel::findAllForUser($currentUser->id);
 
     self::render('chat/home', 'Accueil', [
       'channel' => null,
@@ -51,7 +53,14 @@ class ChatController extends Controller
       return;
     }
 
-    $channels = Channel::findAll();
+    $members = Member::findAllForChannel($channel->id);
+
+    if (array_search($currentUser->id, array_column($members, 'userId')) === false) {
+      header('Location: /404');
+      return;
+    }
+
+    $channels = Channel::findAllForUser($currentUser->id);
     $messages = Message::findAllForChannel($channel->id, null);
 
     self::render('chat/channel', "#$channel->name", [
@@ -107,6 +116,13 @@ class ChatController extends Controller
       return;
     }
 
+    $members = Member::findAllForChannel($channel->id);
+
+    if (array_search($currentUser->id, array_column($members, 'userId')) === false) {
+      self::json(['error' => 'Vous n\'êtes pas dans ce salon !'], 500);
+      return;
+    }
+
     try {
       $message = Message::create(
         messageType: MessageType::default ,
@@ -156,7 +172,7 @@ class ChatController extends Controller
 
     $channel = Channel::create(
       name: $normalizedName,
-      public: true,
+      type: ChannelType::public ,
       ownerId: $currentUser->id
     );
 
@@ -164,6 +180,12 @@ class ChatController extends Controller
       header("Location: $currentUrl?error=Une erreur est survenue lors de la création du salon.");
       return;
     }
+
+    // on rejoint son propre salon
+    Member::create(
+      userId: $currentUser->id,
+      channelId: $channel->id
+    );
 
     header("Location: /chats/{$channel->id}");
   }
