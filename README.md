@@ -21,6 +21,10 @@ Lancer le serveur PHP :
 php -S localhost:[port] -t public/
 ```
 
+## Fonctionnalités & Grille d'évaluation
+
+L'ensemble des fonctionnalités implémentées dans l'application se trouvent dans le fichier [grille-d'évaluation.md](./grille-d´évaluation.md).
+
 ## Structure du projet
 
 Le projet utilise une architecture MVC (Modèle-Vue-Contrôleur) :
