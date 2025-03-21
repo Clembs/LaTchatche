@@ -15,15 +15,16 @@ $uriParts = explode('/', $cleanUri);
 switch ($uriParts[0]) {
   case '':
   case 'chats': {
-    $channelId = $uriParts[1];
+    $channelId = $uriParts[1] ?? null;
+    $action = $uriParts[2] ?? null;
 
-    if (isset($channelId) && $channelId !== '') {
-      if (isset($uriParts[2]) && $uriParts[2] === 'send-message' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($channelId && $channelId !== '') {
+      if ($action === 'send-message' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         ChatController::sendMessage((int) $channelId, $_POST);
         break;
       }
 
-      if (isset($uriParts[2]) && $uriParts[2] === 'messages' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+      if ($action === 'messages' && $_SERVER['REQUEST_METHOD'] === 'GET') {
         ChatController::getLastMessages($channelId, $_GET['lastMessageId'] ?? null);
         break;
       }
@@ -43,6 +44,11 @@ switch ($uriParts[0]) {
     break;
   case 'register':
     AuthController::registerPage();
+    break;
+  case 'channels':
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      ChatController::createChannel($_POST);
+    }
     break;
   default:
     require_once '../app/Views/404.php';

@@ -54,7 +54,7 @@ class ChatController extends Controller
     $channels = Channel::findAll();
     $messages = Message::findAllForChannel($channel->id, null);
 
-    self::render('chat/channel', $channel->name, [
+    self::render('chat/channel', "#$channel->name", [
       'channel' => $channel,
       'channels' => $channels,
       'messages' => array_reverse($messages),
@@ -123,5 +123,48 @@ class ChatController extends Controller
     } catch (\Exception $e) {
       self::json(['error' => 'argh'], 500);
     }
+  }
+
+  public static function createChannel(array $data): void
+  {
+    $currentUser = Session::getCurrentUser();
+    $currentUrl = strtok($_SERVER['HTTP_REFERER'], '?');
+
+    if (!$currentUser) {
+      header('Location: /login');
+      exit;
+    }
+
+    if (!isset($data['name']) || empty($data['name'])) {
+      header("Location: $currentUrl?error=Veuillez renseigner un nom pour le salon.");
+      return;
+    }
+
+    if (strlen($data['name']) > 30) {
+      header("Location: $currentUrl?error=Le nom du salon ne peut pas dépasser 30 caractères.");
+      return;
+    }
+
+    // le nom normalisé, càd sans caractères spéciaux et avec des tirets
+    $normalizedName = strtolower($data['name']);
+    // on retire les caractères spéciaux (en ne comptant pas les accents)
+    $normalizedName = preg_replace('/[^a-z0-9éèàêëôöîïùûüç\-_\s]/', '', $normalizedName);
+    // on remplace les espaces par des tirets
+    $normalizedName = preg_replace('/\s/', '-', $normalizedName);
+    // on retire les tirets en fin de chaîne
+    $normalizedName = rtrim($normalizedName, '-');
+
+    $channel = Channel::create(
+      name: $normalizedName,
+      public: true,
+      ownerId: $currentUser->id
+    );
+
+    if (!$channel) {
+      header("Location: $currentUrl?error=Une erreur est survenue lors de la création du salon.");
+      return;
+    }
+
+    header("Location: /chats/{$channel->id}");
   }
 }

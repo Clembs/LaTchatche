@@ -1,4 +1,4 @@
-<dialog id="create-channel-dialog">
+<dialog id="create-channel-dialog" data-open="<?= isset($_GET['error']) ? 'true' : 'false' ?>">
   <div class="header">
     <div class="title">
       <h2>Créer un salon</h2>
@@ -21,17 +21,25 @@
   </div>
 
   <form id="channel-form" method="post" action="/channels/create">
-    <label for="email" class="input full">
+    <label for="name" class="input full">
       <div class="label">
         Nom du salon (préfixé par un #)
       </div>
-      <input type="text" id="username" name="username" required>
+      <input type="text" id="name" name="name" required maxlength="30">
     </label>
   </form>
+
+  <p class="notice"></p>
 
   <button class="button primary" type="submit">
     Créer
   </button>
+
+  <?php if (isset($_GET['error'])): ?>
+    <p class="error">
+      <?= $_GET['error'] ?>
+    </p>
+  <?php endif ?>
 </dialog>
 
 <script src="/scripts/create-channel-dialog.js"></script>
@@ -40,8 +48,9 @@
 
 <style data-file="chat/dialog">
   #create-channel-dialog {
-    display: flex;
     flex-direction: column;
+    gap: 1rem;
+    align-items: flex-end;
 
     background-color: var(--color-background);
     border: 1px solid var(--color-outline);
@@ -50,11 +59,10 @@
     margin: auto;
     padding: 1.5rem;
     max-width: 500px;
+  }
 
+  #create-channel-dialog[open] {
     display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    align-items: flex-end;
   }
 
   #create-channel-dialog .header {
@@ -76,6 +84,15 @@
   #create-channel-dialog::backdrop {
     background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(8px);
+  }
+
+  #create-channel-dialog .notice {
+    width: 100%;
+    color: orangered;
+  }
+
+  #create-channel-dialog .notice:empty {
+    display: none;
   }
 </style>
 

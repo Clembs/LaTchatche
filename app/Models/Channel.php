@@ -62,12 +62,11 @@ class Channel extends Model
     );
   }
 
-  public static function create(Model $data): Channel
-  {
-    if (!($data instanceof self)) {
-      throw new \InvalidArgumentException('Invalid data type');
-    }
-
+  public static function create(
+    string $name,
+    bool $public,
+    int $ownerId
+  ): Channel {
     $pdo = Database::getPDO();
     $query = $pdo->prepare(
       "INSERT INTO channels
@@ -76,17 +75,17 @@ class Channel extends Model
       (:name, :public, :owner_id)"
     );
     $query->execute([
-      'name' => $data->name,
-      'public' => $data->public,
-      'owner_id' => $data->ownerId,
+      'name' => $name,
+      'public' => $public,
+      'owner_id' => $ownerId,
     ]);
 
     return new Channel(
       id: (int) $pdo->lastInsertId(),
-      name: $data->name,
+      name: $name,
       createdAt: new \DateTime(),
-      public: $data->public,
-      ownerId: $data->ownerId,
+      public: $public,
+      ownerId: $ownerId,
     );
   }
 
