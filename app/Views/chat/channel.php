@@ -83,14 +83,19 @@ foreach ($messages as $message) {
 
   .message {
     display: flex;
-    /* flex-direction: column; */
+    flex-direction: column;
     width: fit-content;
     padding: 0.5rem 0.75rem;
     gap: 0.5rem;
-    align-items: flex-end;
     max-width: 50svw;
     overflow-wrap: break-word;
     word-break: break-all;
+  }
+
+  .message-content {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
   }
 
   .not-me .message {
@@ -102,18 +107,25 @@ foreach ($messages as $message) {
     border-bottom-right-radius: 1.5rem;
   }
 
-  .message:first-child {
+  .message-author {
+    display: none;
+  }
+
+  .not-me .message:first-child .message-author {
+    display: block;
+  }
+
+  .not-me .message:first-child {
     border-top-left-radius: 1.5rem;
   }
 
-  .message:last-child {
+  .not-me .message:last-child {
     border-bottom-left-radius: 1.5rem;
   }
 
   .me .message {
     background-color: var(--color-primary);
     color: var(--color-on-primary);
-    /* margin-left: auto; */
     border-top-left-radius: 1.5rem;
     border-bottom-left-radius: 1.5rem;
     border-top-right-radius: 0.5rem;
@@ -128,12 +140,20 @@ foreach ($messages as $message) {
     border-bottom-right-radius: 1.5rem;
   }
 
-  .message .author,
+  .message-author,
+  .message time {
+    user-select: none;
+    white-space: nowrap;
+  }
+
   .message time {
     font-size: 0.75rem;
-    user-select: none;
     opacity: 0.75;
-    white-space: nowrap;
+  }
+
+  .message-author {
+    font-weight: 500;
+    font-size: 0.9rem;
   }
 
   form {
