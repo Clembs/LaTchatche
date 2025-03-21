@@ -24,7 +24,14 @@ foreach ($messages as $message) {
 
 <main data-channel-id="<?= $channel->id ?>">
   <div class="channel-info">
-    <h2>#<?= $channel->name ?></h2>
+    <div class="channel-name">
+      <div class="icon">
+        <?php include __DIR__ . '/../../Icons/Hashtag.php' ?>
+      </div>
+      <h2>
+        <?= $channel->name ?>
+      </h2>
+    </div>
   </div>
 
   <div class="message-groups">
@@ -39,7 +46,7 @@ foreach ($messages as $message) {
 
   <form id="chat-form" method="post" action="/chats/<?= $channel->id ?>/send-message">
     <input id="chatbox" type="text" name="content" minlength="1" maxlength="255"
-      placeholder="Envoyer un message sur #<?= $channel->name ?>" autofocus required />
+      placeholder="Envoyer un message sur #<?= $channel->name ?>" required />
   </form>
 </main>
 
@@ -60,6 +67,16 @@ foreach ($messages as $message) {
     padding: 0.75rem 1rem;
     background-color: var(--color-surface);
     border-bottom: 1px solid var(--color-outline);
+  }
+
+  .channel-name {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .channel-name h2 {
+    font-size: 1.25rem;
   }
 
   .message-groups {

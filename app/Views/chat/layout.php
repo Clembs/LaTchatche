@@ -31,7 +31,10 @@
           <li>
             <a href="/chats/<?= $ch->id ?>" aria-current="<?= $channel && $channel->id === $ch->id ? 'page' : 'false' ?>">
               <div class="channel-name">
-                #<?= $ch->name ?>
+                <div class="icon">
+                  <?php include __DIR__ . '/../../Icons/Hashtag.php'; ?>
+                </div>
+                <?= $ch->name ?>
               </div>
             </a>
           </li>
@@ -58,7 +61,7 @@
 
   aside {
     background-color: var(--color-surface);
-    padding: 1rem 1.25rem;
+    padding: 1rem 0.75rem;
     border-right: 1px solid var(--color-outline);
   }
 
@@ -72,11 +75,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 0.5rem;
   }
 
   ul {
     display: flex;
     flex-direction: column;
+    gap: 0.125rem;
     list-style: none;
     padding: 0;
     margin: 0;
@@ -89,6 +94,7 @@
   a {
     display: flex;
     text-decoration: none;
+    gap: 0.5rem;
     padding: 0.75rem;
     border-radius: 0.75rem;
   }
@@ -99,6 +105,8 @@
   }
 
   a .channel-name {
+    display: flex;
+    gap: 0.5rem;
     font-weight: 500;
   }
 </style>
