@@ -3,6 +3,7 @@
 
 require '../vendor/autoload.php';
 use App\Controllers\AuthController;
+use App\Controllers\ChannelController;
 use App\Controllers\ChatController;
 
 // On retire le premier et dernier slash puis on explose l'URI en parties
@@ -45,11 +46,17 @@ switch ($uriParts[0]) {
   case 'register':
     AuthController::registerPage();
     break;
-  case 'channels':
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-      ChatController::createChannel($_POST);
+  case 'channels': {
+    if (isset($uriParts[1]) && $uriParts[1] === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+      ChannelController::createChannel($_POST);
+      break;
     }
-    break;
+
+    if (isset($uriParts[1]) && isset($uriParts[2]) && $uriParts[2] === 'invite' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+      ChannelController::invite((int) $uriParts[1]);
+      break;
+    }
+  }
   default:
     require_once '../app/Views/404.php';
 }

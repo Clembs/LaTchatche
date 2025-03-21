@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Models\Channel;
-use App\Models\ChannelType;
 use App\Models\Member;
 use App\Models\Message;
 use App\Models\MessageType;
@@ -141,52 +140,4 @@ class ChatController extends Controller
     }
   }
 
-  public static function createChannel(array $data): void
-  {
-    $currentUser = Session::getCurrentUser();
-    $currentUrl = strtok($_SERVER['HTTP_REFERER'], '?');
-
-    if (!$currentUser) {
-      header('Location: /login');
-      exit;
-    }
-
-    if (!isset($data['name']) || empty($data['name'])) {
-      header("Location: $currentUrl?error=Veuillez renseigner un nom pour le salon.");
-      return;
-    }
-
-    if (strlen($data['name']) > 30) {
-      header("Location: $currentUrl?error=Le nom du salon ne peut pas dépasser 30 caractères.");
-      return;
-    }
-
-    // le nom normalisé, càd sans caractères spéciaux et avec des tirets
-    $normalizedName = strtolower($data['name']);
-    // on retire les caractères spéciaux (en ne comptant pas les accents)
-    $normalizedName = preg_replace('/[^a-z0-9éèàêëôöîïùûüç\-_\s]/', '', $normalizedName);
-    // on remplace les espaces par des tirets
-    $normalizedName = preg_replace('/\s/', '-', $normalizedName);
-    // on retire les tirets en fin de chaîne
-    $normalizedName = rtrim($normalizedName, '-');
-
-    $channel = Channel::create(
-      name: $normalizedName,
-      type: ChannelType::public ,
-      ownerId: $currentUser->id
-    );
-
-    if (!$channel) {
-      header("Location: $currentUrl?error=Une erreur est survenue lors de la création du salon.");
-      return;
-    }
-
-    // on rejoint son propre salon
-    Member::create(
-      userId: $currentUser->id,
-      channelId: $channel->id
-    );
-
-    header("Location: /chats/{$channel->id}");
-  }
 }
