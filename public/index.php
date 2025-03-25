@@ -40,11 +40,15 @@ switch ($uriParts[0]) {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       AuthController::login($_POST);
     } else {
-      AuthController::loginPage($_REQUEST['error'] ?? null);
+      AuthController::loginPage($_PAGE['error'] ?? null);
     }
     break;
   case 'register':
-    AuthController::registerPage();
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      AuthController::register($_POST);
+    } else {
+      AuthController::registerPage($_PAGE['error'] ?? null);
+    }
     break;
   case 'channels': {
     if (isset($uriParts[1]) && $uriParts[1] === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {

@@ -33,6 +33,25 @@ class User extends Model
     );
   }
 
+  public static function findByUsername(string $username): ?User
+  {
+    $pdo = Database::getPDO();
+    $query = $pdo->prepare('SELECT * FROM users WHERE username = :username');
+    $query->execute(['username' => $username]);
+    $res = $query->fetch();
+
+    if (!$res) {
+      return null;
+    }
+
+    return new User(
+      id: $res['id'],
+      username: $res['username'],
+      password: $res['password'],
+      createdAt: new \DateTime($res['created_at']),
+    );
+  }
+
   /**
    * @return User[]
    */
@@ -77,24 +96,19 @@ class User extends Model
     );
   }
 
-  public static function create(Model $data): User
+  public static function create(string $username, string $password): User
   {
-    if (!($data instanceof self)) {
-      throw new \InvalidArgumentException('Invalid data type');
-    }
-
-
     $pdo = Database::getPDO();
     $query = $pdo->prepare('INSERT INTO users (username, password) VALUES (:username, :password)');
     $query->execute([
-      'username' => $data->username,
-      'password' => password_hash($data->password, PASSWORD_DEFAULT),
+      'username' => $username,
+      'password' => password_hash($password, PASSWORD_DEFAULT),
     ]);
 
     return new User(
       id: (int) $pdo->lastInsertId(),
-      username: $data->username,
-      password: $data->password,
+      username: $username,
+      password: $password,
       createdAt: new \DateTime(),
     );
   }

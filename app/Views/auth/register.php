@@ -7,7 +7,7 @@
 </div>
 
 
-<form action="/login" method="post">
+<form action="/register" method="post">
   <label for="username" class="input full">
     <div class="label">
       Nom d'utilisateur
@@ -19,7 +19,7 @@
     <div class="label">
       Mot de passe
     </div>
-    <input type="password" id="password" name="password" required>
+    <input type="password" id="password" name="password" required pattern="(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}">
   </label>
 
 
