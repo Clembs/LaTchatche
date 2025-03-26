@@ -27,13 +27,13 @@
       </div>
       <input type="text" id="name" name="name" required maxlength="30">
     </label>
+
+    <p class="notice"></p>
+
+    <button class="button primary" type="submit">
+      Créer
+    </button>
   </form>
-
-  <p class="notice"></p>
-
-  <button class="button primary" type="submit">
-    Créer
-  </button>
 
   <?php if (isset($_GET['error'])): ?>
     <p class="error">

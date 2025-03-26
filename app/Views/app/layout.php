@@ -29,7 +29,7 @@
       <ul>
         <?php foreach ($channels as $ch): ?>
           <li>
-            <a href="/chats/<?= $ch->id ?>" aria-current="<?= $channel && $channel->id === $ch->id ? 'page' : 'false' ?>">
+            <a href="/chats/<?= $ch->id ?>" aria-current="<?= $channel?->id === $ch->id ? 'page' : 'false' ?>">
               <div class="channel-name">
                 <div class="icon">
                   <?php include __DIR__ . '/../../Icons/Hashtag.php'; ?>
@@ -65,20 +65,20 @@
     border-right: 1px solid var(--color-outline);
   }
 
-  .top {
+  aside .top {
     display: flex;
     flex-direction: column;
     gap: 1rem;
   }
 
-  .top .header {
+  aside .top .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 0.5rem;
   }
 
-  ul {
+  aside ul {
     display: flex;
     flex-direction: column;
     gap: 0.125rem;
@@ -87,11 +87,11 @@
     margin: 0;
   }
 
-  li {
+  aside li {
     margin: 0;
   }
 
-  a {
+  aside a {
     display: flex;
     text-decoration: none;
     gap: 0.5rem;
@@ -99,12 +99,12 @@
     border-radius: 0.75rem;
   }
 
-  a[aria-current="page"],
-  a:hover {
+  aside a[aria-current="page"],
+  aside a:hover {
     background-color: var(--color-surface-variant);
   }
 
-  a .channel-name {
+  aside a .channel-name {
     display: flex;
     gap: 0.5rem;
     font-weight: 500;

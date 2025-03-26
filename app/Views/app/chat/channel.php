@@ -25,14 +25,22 @@ foreach ($messages as $message) {
 <?php ob_start(); ?>
 
 <main data-channel-id="<?= $channel->id ?>">
-  <div class="channel-info">
-    <div class="channel-name">
-      <div class="icon">
-        <?php include __DIR__ . '/../../Icons/Hashtag.php' ?>
+  <div class="channel-header">
+    <div class="channel-info">
+      <div class="channel-name">
+        <div class="icon">
+          <?php include __DIR__ . '/../../../Icons/Hashtag.php' ?>
+        </div>
+        <h2>
+          <?= $channel->name ?>
+        </h2>
       </div>
-      <h2>
-        <?= $channel->name ?>
-      </h2>
+
+      <p>
+        <?= $channel->memberCount ?> membre<?= $channel->memberCount > 1 ? 's' : '' ?>
+        •
+        Opéré par <?= $channel->ownerId === $currentUser->id ? 'vous' : $channel->ownerUsername ?>
+      </p>
     </div>
 
     <?php if ($channel->type === ChannelType::public || $currentUser->id === $channel->ownerId): ?>
@@ -78,18 +86,24 @@ foreach ($messages as $message) {
     flex-direction: column;
   }
 
-  main .channel-info {
+  main .channel-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.75rem 1rem;
+    padding: 1rem;
     background-color: var(--color-surface);
     border-bottom: 1px solid var(--color-outline);
   }
 
+  .channel-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
   .channel-name {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.75rem;
     align-items: center;
   }
 

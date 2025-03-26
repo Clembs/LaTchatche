@@ -19,13 +19,26 @@ class Channel extends Model
     public \DateTime $createdAt,
     public ChannelType $type,
     public int $ownerId,
+    public string $ownerUsername,
+    public int $memberCount,
+    public int $messageCount,
   ) {
   }
 
   public static function findById(int $id): ?Channel
   {
     $pdo = Database::getPDO();
-    $query = $pdo->prepare('SELECT * FROM channels WHERE id = :id');
+    $query = $pdo->prepare(
+      'SELECT c.*,
+      COUNT(DISTINCT mb.user_id) AS member_count,
+      COUNT(msg.id) AS message_count,
+      u.username AS owner_username
+      FROM channels AS c
+      LEFT JOIN members AS mb ON c.id = mb.channel_id
+      LEFT JOIN messages AS msg ON c.id = msg.channel_id
+      LEFT JOIN users AS u ON c.owner_id = u.id
+      WHERE c.id = :id'
+    );
     $query->execute(['id' => $id]);
     $res = $query->fetch();
 
@@ -39,6 +52,9 @@ class Channel extends Model
       createdAt: new \DateTime($res['created_at']),
       type: ChannelType::from($res['type']),
       ownerId: $res['owner_id'],
+      ownerUsername: $res['owner_username'],
+      memberCount: $res['member_count'],
+      messageCount: $res['message_count'],
     );
   }
 
@@ -46,10 +62,20 @@ class Channel extends Model
    * Fetch all public channels
    * @return Channel[]
    */
-  public static function findAll(): array
+  public static function findAllPublic(): array
   {
     $pdo = Database::getPDO();
-    $query = $pdo->query('SELECT * FROM channels WHERE public = true');
+    $query = $pdo->query(
+      'SELECT c.*,
+      COUNT(DISTINCT mb.user_id) AS member_count,
+      COUNT(msg.id) AS message_count,
+      u.username AS owner_username
+      FROM channels AS c
+      LEFT JOIN members AS mb ON c.id = mb.channel_id
+      LEFT JOIN messages AS msg ON c.id = msg.channel_id
+      LEFT JOIN users AS u ON c.owner_id = u.id
+      WHERE c.type = "public"'
+    );
 
     $res = $query->fetchAll();
 
@@ -62,6 +88,9 @@ class Channel extends Model
           createdAt: new \DateTime($channel['created_at']),
           type: ChannelType::from($channel['type']),
           ownerId: $channel['owner_id'],
+          ownerUsername: $channel['owner_username'],
+          memberCount: $channel['member_count'],
+          messageCount: $channel['message_count'],
         );
         return $acc;
       },
@@ -77,9 +106,15 @@ class Channel extends Model
   {
     $pdo = Database::getPDO();
     $query = $pdo->prepare(
-      "SELECT c.* FROM channels c
-      JOIN members m ON c.id = m.channel_id
-      WHERE m.user_id = :userid"
+      'SELECT c.*,
+      COUNT(DISTINCT mb.user_id) AS member_count,
+      COUNT(msg.id) AS message_count,
+      u.username AS owner_username
+      FROM channels AS c
+      LEFT JOIN members AS mb ON c.id = mb.channel_id
+      LEFT JOIN messages AS msg ON c.id = msg.channel_id
+      LEFT JOIN users AS u ON c.owner_id = u.id
+      WHERE mb.user_id = :userid'
     );
 
     $query->execute([
@@ -96,6 +131,9 @@ class Channel extends Model
           createdAt: new \DateTime($channel['created_at']),
           type: ChannelType::from($channel['type']),
           ownerId: $channel['owner_id'],
+          ownerUsername: $channel['owner_username'],
+          memberCount: $channel['member_count'],
+          messageCount: $channel['message_count'],
         );
         return $acc;
       },
@@ -127,6 +165,9 @@ class Channel extends Model
       type: $type,
       createdAt: new \DateTime(),
       ownerId: $ownerId,
+      ownerUsername: '',
+      memberCount: 1,
+      messageCount: 0,
     );
   }
 

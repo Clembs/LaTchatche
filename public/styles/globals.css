@@ -75,7 +75,7 @@ h6,
 
 p,
 .subtext {
-  color: var(--color-on-surface-variant);
+  color: var(--color-on-surface-light);
   font-size: 15px;
 }
 
