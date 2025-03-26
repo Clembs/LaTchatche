@@ -52,7 +52,7 @@
     gap: 1rem;
     align-items: flex-end;
 
-    background-color: var(--color-background);
+    background-color: var(--color-surface-light);
     border: 1px solid var(--color-outline);
     border-radius: 2rem;
 

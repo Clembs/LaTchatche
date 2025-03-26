@@ -53,7 +53,7 @@ foreach ($messages as $message) {
     <?php foreach ($groupedMessages as $messages): ?>
       <div class="message-group <?= $messages[0]->author->id === $currentUser->id ? 'me' : 'not-me' ?>">
         <?php foreach ($messages as $index => $message) {
-          include 'Message.php';
+          include '../../components/Message.php';
         } ?>
       </div>
     <?php endforeach; ?>

@@ -26,7 +26,7 @@ class ChatController extends Controller
 
     $channels = Channel::findAllForUser($currentUser->id);
 
-    self::render('chat/home', 'Accueil', [
+    self::render('app/chat/home', 'Accueil', [
       'channel' => null,
       'channels' => $channels,
       'currentUser' => $currentUser
@@ -62,7 +62,7 @@ class ChatController extends Controller
     $channels = Channel::findAllForUser($currentUser->id);
     $messages = Message::findAllForChannel($channel->id, null);
 
-    self::render('chat/channel', "#$channel->name", [
+    self::render('app/chat/channel', "#$channel->name", [
       'channel' => $channel,
       'channels' => $channels,
       'messages' => array_reverse($messages),
@@ -90,7 +90,7 @@ class ChatController extends Controller
     foreach ($messages as $message) {
       ob_start();
 
-      include __DIR__ . '/../Views/chat/Message.php';
+      include __DIR__ . '/../Views/components/Message.php';
 
       array_push($messageHtmls, ob_get_clean());
     }
