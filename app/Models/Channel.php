@@ -29,15 +29,16 @@ class Channel extends Model
   {
     $pdo = Database::getPDO();
     $query = $pdo->prepare(
-      'SELECT c.*,
-      COUNT(DISTINCT mb.user_id) AS member_count,
-      COUNT(msg.id) AS message_count,
-      u.username AS owner_username
+      'SELECT c.id, c.name, c.created_at, c.type, c.owner_id,
+        COUNT(DISTINCT mb.user_id) AS member_count,
+        COUNT(msg.id) AS message_count,
+        u.username AS owner_username
       FROM channels AS c
       LEFT JOIN members AS mb ON c.id = mb.channel_id
       LEFT JOIN messages AS msg ON c.id = msg.channel_id
       LEFT JOIN users AS u ON c.owner_id = u.id
-      WHERE c.id = :id'
+      WHERE c.id = :id
+      GROUP BY c.id, c.name, c.created_at, c.type, c.owner_id, u.username'
     );
     $query->execute(['id' => $id]);
     $res = $query->fetch();
@@ -66,15 +67,16 @@ class Channel extends Model
   {
     $pdo = Database::getPDO();
     $query = $pdo->query(
-      'SELECT c.*,
-      COUNT(DISTINCT mb.user_id) AS member_count,
-      COUNT(msg.id) AS message_count,
-      u.username AS owner_username
+      'SELECT c.id, c.name, c.created_at, c.type, c.owner_id,
+        COUNT(DISTINCT mb.user_id) AS member_count,
+        COUNT(msg.id) AS message_count,
+        u.username AS owner_username
       FROM channels AS c
       LEFT JOIN members AS mb ON c.id = mb.channel_id
       LEFT JOIN messages AS msg ON c.id = msg.channel_id
       LEFT JOIN users AS u ON c.owner_id = u.id
-      WHERE c.type = "public"'
+      WHERE c.type = "public"
+      GROUP BY c.id, c.name, c.created_at, c.type, c.owner_id, u.username'
     );
 
     $res = $query->fetchAll();
@@ -106,15 +108,16 @@ class Channel extends Model
   {
     $pdo = Database::getPDO();
     $query = $pdo->prepare(
-      'SELECT c.*,
-      COUNT(DISTINCT mb.user_id) AS member_count,
-      COUNT(msg.id) AS message_count,
-      u.username AS owner_username
+      'SELECT c.id, c.name, c.created_at, c.type, c.owner_id,
+        COUNT(DISTINCT mb.user_id) AS member_count,
+        COUNT(msg.id) AS message_count,
+        u.username AS owner_username
       FROM channels AS c
       LEFT JOIN members AS mb ON c.id = mb.channel_id
       LEFT JOIN messages AS msg ON c.id = msg.channel_id
       LEFT JOIN users AS u ON c.owner_id = u.id
-      WHERE mb.user_id = :userid'
+      WHERE mb.user_id = :userid
+      GROUP BY c.id, c.name, c.created_at, c.type, c.owner_id, u.username'
     );
 
     $query->execute([
