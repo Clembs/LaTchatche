@@ -207,7 +207,7 @@ class Message extends Model
       'createdAt' => $this->createdAt->format('Y-m-d H:i:s'),
       'authorId' => $this->authorId,
       'channelId' => $this->channelId,
-      'author' => $this->author,
+      'author' => $this->author->jsonSerialize(),
     ];
   }
 }

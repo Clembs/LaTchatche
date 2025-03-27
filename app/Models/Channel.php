@@ -193,7 +193,12 @@ class Channel extends Model
       'name' => $this->name,
       'createdAt' => $this->createdAt->format('Y-m-d H:i:s'),
       'type' => $this->type->value,
-      'ownerId' => $this->ownerId,
+      'owner' => [
+        'id' => $this->ownerId,
+        'username' => $this->ownerUsername,
+      ],
+      'memberCount' => $this->memberCount,
+      'messageCount' => $this->messageCount,
     ];
   }
 }
