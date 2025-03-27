@@ -42,7 +42,7 @@
 
 ### Sécurité
 
-- [ ] L'accès à la base est sécurisé via un compte autre que root, et un mot de passe est requis pour ce compte
+- [x] L'accès à la base est sécurisé via un compte autre que root, et un mot de passe est requis pour ce compte
 - [x] Les accès à la base de données sont sécurisés à l’aide des méthodes prepare et execute
 
 ### Code source
