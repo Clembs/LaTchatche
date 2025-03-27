@@ -107,7 +107,7 @@ class ChannelController extends Controller
   /**
    * Rejoint un salon via une invitation.
    */
-  public static function joinChannel(string $token): void
+  public static function joinChannelByToken(string $token): void
   {
     $currentUser = Session::getCurrentUser();
 
@@ -126,6 +126,55 @@ class ChannelController extends Controller
     $channel = Channel::findById($invite->channelId);
 
     if (!$channel) {
+      self::notFound();
+      return;
+    }
+
+    Member::create(
+      userId: $currentUser->id,
+      channelId: $channel->id
+    );
+
+    header("Location: /chats/{$channel->id}");
+  }
+
+  /**
+   * Affiche la page des salons publics.
+   */
+  public static function publicChannels(): void
+  {
+    $currentUser = Session::getCurrentUser();
+
+    if (!$currentUser) {
+      header('Location: /login');
+      exit;
+    }
+
+    $channels = Channel::findAllPublic();
+    $userChannels = Channel::findAllForUser($currentUser->id);
+
+    self::render('app/channels/home', 'Salons publics', [
+      'channels' => $channels,
+      'userChannels' => $userChannels,
+      'currentUser' => $currentUser
+    ]);
+  }
+
+  /**
+   * Rejoint un salon public (sans besoin d'une invitation)
+   */
+  public static function joinChannelById(int $channelId): void
+  {
+    $currentUser = Session::getCurrentUser();
+
+    if (!$currentUser) {
+      header('Location: /login');
+      exit;
+    }
+
+    $channel = Channel::findById($channelId);
+
+    if (!$channel || $channel->type !== ChannelType::public ) {
       self::notFound();
       return;
     }

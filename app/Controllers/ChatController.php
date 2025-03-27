@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Models\Channel;
+use App\Models\ChannelType;
 use App\Models\Member;
 use App\Models\Message;
 use App\Models\MessageType;
@@ -24,11 +25,11 @@ class ChatController extends Controller
       return;
     }
 
-    $channels = Channel::findAllForUser($currentUser->id);
+    $userChannels = Channel::findAllForUser($currentUser->id);
 
     self::render('app/chat/home', 'Accueil', [
       'channel' => null,
-      'channels' => $channels,
+      'userChannels' => $userChannels,
       'currentUser' => $currentUser
     ]);
   }
@@ -54,17 +55,21 @@ class ChatController extends Controller
 
     $members = Member::findAllForChannel($channel->id);
 
-    if (array_search($currentUser->id, array_column($members, 'userId')) === false) {
+
+    if (
+      $channel->type !== ChannelType::public &&
+      array_search($currentUser->id, array_column($members, 'userId')) === false
+    ) {
       header('Location: /404');
       return;
     }
 
-    $channels = Channel::findAllForUser($currentUser->id);
+    $userChannels = Channel::findAllForUser($currentUser->id);
     $messages = Message::findAllForChannel($channel->id, null);
 
     self::render('app/chat/channel', "#$channel->name", [
       'channel' => $channel,
-      'channels' => $channels,
+      'userChannels' => $userChannels,
       'messages' => array_reverse($messages),
       'currentUser' => $currentUser,
     ]);
@@ -135,7 +140,7 @@ class ChatController extends Controller
       // On récupère notre composant de message et on le renvoie
       // plutôt que de renvoyer le message et de l'afficher via JS
       // pour éviter les injections HTML et attaques XSS
-      include __DIR__ . '/../Views/chat/Message.php';
+      include __DIR__ . '/../Views/components/Message.php';
     } catch (\Exception $e) {
       self::json(['error' => 'argh'], 500);
     }

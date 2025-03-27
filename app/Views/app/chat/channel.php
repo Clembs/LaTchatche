@@ -5,6 +5,7 @@ use App\Models\ChannelType;
 /**
  * @var \App\Models\Channel $channel
  * @var \App\Models\Message[] $messages
+ * @var \App\Models\Channel[] $userChannels
  * @var \App\Models\User $currentUser
  */
 
@@ -61,16 +62,27 @@ foreach ($messages as $message) {
     <?php foreach ($groupedMessages as $messages): ?>
       <div class="message-group <?= $messages[0]->author->id === $currentUser->id ? 'me' : 'not-me' ?>">
         <?php foreach ($messages as $index => $message) {
-          include '../../components/Message.php';
+          include __DIR__ . '/../../components/Message.php';
         } ?>
       </div>
     <?php endforeach; ?>
   </div>
 
-  <form id="chat-form" method="post" action="/chats/<?= $channel->id ?>/send-message">
-    <input id="chatbox" type="text" name="content" minlength="1" maxlength="255"
-      placeholder="Envoyer un message sur #<?= $channel->name ?>" required />
-  </form>
+  <!-- Si le salon fait partie des salons de l'utilisateur, on montre la zone de chat -->
+  <?php if (array_search($channel->id, array_column($userChannels, 'id')) !== false): ?>
+    <form id="chat-form" method="post" action="/chats/<?= $channel->id ?>/send-message">
+      <input id="chatbox" type="text" name="content" minlength="1" maxlength="255"
+        placeholder="Envoyer un message sur #<?= $channel->name ?>" required />
+    </form>
+  <?php else: ?>
+    <div id="join-channel-banner">
+      Rejoignez #<?= $channel->name ?> pour chatter avec <?= $channel->memberCount ?> autre(s) membre(s) !
+
+      <a href="/channels/<?= $channel->id ?>/join" class="button primary inline">
+        Rejoindre #<?= $channel->name ?>
+      </a>
+    </div>
+  <?php endif; ?>
 </main>
 
 <script src="/scripts/channel-chats.js"></script>
@@ -224,6 +236,16 @@ foreach ($messages as $message) {
     padding: 0.75rem 1rem;
     background-color: var(--color-surface);
     color: var(--color-on-surface);
+  }
+
+  #join-channel-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-outline);
   }
 </style>
 

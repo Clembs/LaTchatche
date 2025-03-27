@@ -60,10 +60,18 @@ switch ($uriParts[0]) {
       ChannelController::invite((int) $uriParts[1]);
       break;
     }
+
+    if (isset($uriParts[1]) && isset($uriParts[2]) && $uriParts[2] === 'join' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+      ChannelController::joinChannelById((int) $uriParts[1]);
+      break;
+    }
+
+    ChannelController::publicChannels();
+    break;
   }
   case 'join': {
     if (isset($uriParts[1]) && $_SERVER['REQUEST_METHOD'] === 'GET') {
-      ChannelController::joinChannel($uriParts[1]);
+      ChannelController::joinChannelByToken($uriParts[1]);
       break;
     }
   }
