@@ -19,8 +19,12 @@
   <div class="message-content">
     <?= htmlspecialchars($message->content) ?>
     <time datetime="<?= $message->createdAt->format('Y-m-d H:i:s') ?>">
-      <?php if ($message->createdAt->format('D') !== date('D')): ?>
-        Le <?= $message->createdAt->format('d/m/Y') ?> à
+      <?php if ((int) $message->createdAt->format('d') === (int) date('d') - 1): ?>
+        Hier à
+      <?php elseif ($message->createdAt->format('D') === date('D')): ?>
+        Aujourd'hui à
+      <?php else: ?>
+        Le <?= $message->createdAt->format('d/m') ?>
       <?php endif ?>
       <?= $message->createdAt->format('H:i') ?>
     </time>
