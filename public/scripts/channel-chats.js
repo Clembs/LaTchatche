@@ -7,7 +7,7 @@ const messageGroups = $(".message-groups");
  * L'ID de l'utilisateur connecté
  * @type {string}
  */
-const currentUserId = $(".content").data("user-id");
+const currentUserId = $("#chat-content").data("user-id");
 /**
  * L'ID du salon actuel
  * @type {string}
