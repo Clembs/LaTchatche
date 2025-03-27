@@ -26,7 +26,13 @@ switch ($uriParts[0]) {
       }
 
       if ($action === 'messages' && $_SERVER['REQUEST_METHOD'] === 'GET') {
-        ChatController::getLastMessages($channelId, $_GET['lastMessageId'] ?? null);
+        $json = isset($_GET['json']) && $_GET['json'] === 'true';
+
+        ChatController::getLastMessages(
+          $channelId,
+          $_GET['lastMessageId'] ?? null,
+          $json
+        );
         break;
       }
 
@@ -40,14 +46,14 @@ switch ($uriParts[0]) {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       AuthController::login($_POST);
     } else {
-      AuthController::loginPage($_PAGE['error'] ?? null);
+      AuthController::loginPage($_GET['error'] ?? null);
     }
     break;
   case 'register':
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       AuthController::register($_POST);
     } else {
-      AuthController::registerPage($_PAGE['error'] ?? null);
+      AuthController::registerPage($_GET['error'] ?? null);
     }
     break;
   case 'channels': {
