@@ -29,7 +29,7 @@
       <ul>
         <?php foreach ($userChannels as $ch): ?>
           <li>
-            <a class="item" href="/chats/<?= $ch->id ?>" draggable="false"
+            <a class="item" href="/channels/<?= $ch->id ?>" draggable="false"
               aria-current="<?= $channel && $channel->id === $ch->id ? 'page' : 'false' ?>">
               <div class="channel-name">
                 <div class="icon">
@@ -48,7 +48,7 @@
         <li>
           <a class="item" href="/channels" draggable="false"
             aria-current="<?=
-              str_contains($_SERVER['REQUEST_URI'], '/channels') || !in_array($channel->id, array_map(fn($ch) => $ch->id, $userChannels)) ? 'page' : 'false' ?>">
+              $_SERVER['REQUEST_URI'] === '/channels' || !in_array($channel->id, array_map(fn($ch) => $ch->id, $userChannels)) ? 'page' : 'false' ?>">
             <div class="icon">
               <!-- Compass -->
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -88,7 +88,7 @@
 
 <?php ob_start() ?>
 
-<style data-file="chat/layout">
+<style data-file="channels/layout">
   #chat-content {
     display: grid;
     grid-template-columns: 350px 1fr;

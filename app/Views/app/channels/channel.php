@@ -70,7 +70,7 @@ foreach ($messages as $message) {
 
   <!-- Si le salon fait partie des salons de l'utilisateur, on montre la zone de chat -->
   <?php if (array_search($channel->id, array_column($userChannels, 'id')) !== false): ?>
-    <form id="chat-form" method="post" action="/chats/<?= $channel->id ?>/send-message">
+    <form id="chat-form" method="post" action="/channels/<?= $channel->id ?>/messages">
       <input id="chatbox" type="text" name="content" minlength="1" maxlength="255"
         placeholder="Envoyer un message sur #<?= $channel->name ?>" required />
     </form>
@@ -91,7 +91,7 @@ foreach ($messages as $message) {
 
 <?php ob_start(); ?>
 
-<style data-file="chat/channel">
+<style data-file="channels/channel">
   main {
     height: 100dvh;
     display: flex;

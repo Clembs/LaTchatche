@@ -7,14 +7,78 @@ use App\Models\Channel;
 use App\Models\ChannelType;
 use App\Models\Invite;
 use App\Models\Member;
+use App\Models\Message;
 use App\Models\Session;
 
 class ChannelController extends Controller
 {
   /**
+   * Affiche la page des salons publics.
+   */
+  public static function publicChannelsPage(): void
+  {
+    $currentUser = Session::getCurrentUser();
+
+    if (!$currentUser) {
+      header('Location: /login');
+      exit;
+    }
+
+    $channels = Channel::findAllPublic();
+    $userChannels = Channel::findAllForUser($currentUser->id);
+
+    self::render('app/channels/public-channels', 'Salons publics', [
+      'channels' => $channels,
+      'userChannels' => $userChannels,
+      'currentUser' => $currentUser
+    ]);
+  }
+
+  /**
+   * Affiche la page d'un salon sélectionné, avec les derniers messages et de l'info sur le salon.
+   */
+  public static function channelPage(int $id): void
+  {
+    $currentUser = Session::getCurrentUser();
+
+    if (!$currentUser) {
+      header('Location: /login');
+      return;
+    }
+
+    $channel = Channel::findById($id);
+
+    if (!$channel) {
+      self::notFound();
+      return;
+    }
+
+    $members = Member::findAllForChannel($channel->id);
+
+
+    if (
+      $channel->type !== ChannelType::public &&
+      array_search($currentUser->id, array_column($members, 'userId')) === false
+    ) {
+      header('Location: /404');
+      return;
+    }
+
+    $userChannels = Channel::findAllForUser($currentUser->id);
+    $messages = Message::findAllForChannel($channel->id, null);
+
+    self::render('app/channels/channel', "#$channel->name", [
+      'channel' => $channel,
+      'userChannels' => $userChannels,
+      'messages' => array_reverse($messages),
+      'currentUser' => $currentUser,
+    ]);
+  }
+
+  /**
    * Crée un salon, fait rejoindre l'utilisateur et redirige vers le salon.
    */
-  public static function createChannel(array $data): void
+  public static function create(array $data): void
   {
     $currentUser = Session::getCurrentUser();
     $currentUrl = strtok($_SERVER['HTTP_REFERER'], '?');
@@ -60,9 +124,8 @@ class ChannelController extends Controller
       channelId: $channel->id
     );
 
-    header("Location: /chats/{$channel->id}");
+    header("Location: /channels/{$channel->id}");
   }
-
 
   /**
    * Crée ou récupère une invitation pour un salon.
@@ -105,9 +168,44 @@ class ChannelController extends Controller
   }
 
   /**
+   * Rejoint un salon public (sans besoin d'une invitation)
+   */
+  public static function join(int $channelId): void
+  {
+    $currentUser = Session::getCurrentUser();
+
+    if (!$currentUser) {
+      header('Location: /login');
+      exit;
+    }
+
+    $channel = Channel::findById($channelId);
+
+    if (!$channel || $channel->type !== ChannelType::public) {
+      self::notFound();
+      return;
+    }
+
+    $members = Member::findAllForChannel($channel->id);
+
+    // si l'utilisateur est déjà membre du salon
+    if (array_reduce($members, fn($acc, $member) => $acc || $member->userId === $currentUser->id, false)) {
+      header("Location: /channels/{$channel->id}");
+      return;
+    }
+
+    Member::create(
+      userId: $currentUser->id,
+      channelId: $channel->id
+    );
+
+    header("Location: /channels/{$channel->id}");
+  }
+
+  /**
    * Rejoint un salon via une invitation.
    */
-  public static function joinChannelByToken(string $token): void
+  public static function joinWithToken(string $token): void
   {
     $currentUser = Session::getCurrentUser();
 
@@ -134,7 +232,7 @@ class ChannelController extends Controller
 
     // si l'utilisateur est déjà membre du salon
     if (array_reduce($members, fn($acc, $member) => $acc || $member->userId === $currentUser->id, false)) {
-      header("Location: /chats/{$channel->id}");
+      header("Location: /channels/{$channel->id}");
       return;
     }
 
@@ -143,13 +241,13 @@ class ChannelController extends Controller
       channelId: $channel->id
     );
 
-    header("Location: /chats/{$channel->id}");
+    header("Location: /channels/{$channel->id}");
   }
 
   /**
-   * Affiche la page des salons publics.
+   * Récupère les derniers messages pour un salon donné et les renvoie en un tableau de chaînes HTML.
    */
-  public static function publicChannels(): void
+  public static function getMessages(string $channelId, ?string $lastMessageId, bool $json = false): void
   {
     $currentUser = Session::getCurrentUser();
 
@@ -158,48 +256,24 @@ class ChannelController extends Controller
       exit;
     }
 
-    $channels = Channel::findAllPublic();
-    $userChannels = Channel::findAllForUser($currentUser->id);
+    $messages = Message::findAllForChannel($channelId, $lastMessageId ? (int) $lastMessageId : null);
+    $messages = array_reverse($messages);
 
-    self::render('app/channels/home', 'Salons publics', [
-      'channels' => $channels,
-      'userChannels' => $userChannels,
-      'currentUser' => $currentUser
-    ]);
-  }
-
-  /**
-   * Rejoint un salon public (sans besoin d'une invitation)
-   */
-  public static function joinChannelById(int $channelId): void
-  {
-    $currentUser = Session::getCurrentUser();
-
-    if (!$currentUser) {
-      header('Location: /login');
-      exit;
-    }
-
-    $channel = Channel::findById($channelId);
-
-    if (!$channel || $channel->type !== ChannelType::public) {
-      self::notFound();
+    if ($json) {
+      self::json($messages);
       return;
     }
 
-    $members = Member::findAllForChannel($channel->id);
+    $messageHtmls = [];
 
-    // si l'utilisateur est déjà membre du salon
-    if (array_reduce($members, fn($acc, $member) => $acc || $member->userId === $currentUser->id, false)) {
-      header("Location: /chats/{$channel->id}");
-      return;
+    foreach ($messages as $message) {
+      ob_start();
+
+      include __DIR__ . '/../Views/components/Message.php';
+
+      array_push($messageHtmls, ob_get_clean());
     }
 
-    Member::create(
-      userId: $currentUser->id,
-      channelId: $channel->id
-    );
-
-    header("Location: /chats/{$channel->id}");
+    self::json($messageHtmls);
   }
 }

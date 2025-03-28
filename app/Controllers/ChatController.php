@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Models\Channel;
-use App\Models\ChannelType;
 use App\Models\Member;
 use App\Models\Message;
 use App\Models\MessageType;
@@ -16,7 +15,7 @@ class ChatController extends Controller
   /**
    * Affiche la page d'accueil.
    */
-  public static function home(): void
+  public static function homePage(): void
   {
     $currentUser = Session::getCurrentUser();
 
@@ -27,7 +26,7 @@ class ChatController extends Controller
 
     $userChannels = Channel::findAllForUser($currentUser->id);
 
-    self::render('app/chat/home', 'Accueil', [
+    self::render('app/channels/home', 'Accueil', [
       'channel' => null,
       'userChannels' => $userChannels,
       'currentUser' => $currentUser
@@ -35,80 +34,9 @@ class ChatController extends Controller
   }
 
   /**
-   * Montre des infos pour le salon sélectionné. (WIP)
+   * Crée un message dans un salon.
    */
-  public static function channel(int $id): void
-  {
-    $currentUser = Session::getCurrentUser();
-
-    if (!$currentUser) {
-      header('Location: /login');
-      return;
-    }
-
-    $channel = Channel::findById($id);
-
-    if (!$channel) {
-      self::notFound();
-      return;
-    }
-
-    $members = Member::findAllForChannel($channel->id);
-
-
-    if (
-      $channel->type !== ChannelType::public &&
-      array_search($currentUser->id, array_column($members, 'userId')) === false
-    ) {
-      header('Location: /404');
-      return;
-    }
-
-    $userChannels = Channel::findAllForUser($currentUser->id);
-    $messages = Message::findAllForChannel($channel->id, null);
-
-    self::render('app/chat/channel', "#$channel->name", [
-      'channel' => $channel,
-      'userChannels' => $userChannels,
-      'messages' => array_reverse($messages),
-      'currentUser' => $currentUser,
-    ]);
-  }
-
-  /**
-   * Récupère les derniers messages pour un salon donné et les renvoie en un tableau de chaînes HTML.
-   */
-  public static function getLastMessages(string $channelId, ?string $lastMessageId, bool $json = false): void
-  {
-    $currentUser = Session::getCurrentUser();
-
-    if (!$currentUser) {
-      header('Location: /login');
-      exit;
-    }
-
-    $messages = Message::findAllForChannel($channelId, $lastMessageId ? (int) $lastMessageId : null);
-    $messages = array_reverse($messages);
-
-    if ($json) {
-      self::json($messages);
-      return;
-    }
-
-    $messageHtmls = [];
-
-    foreach ($messages as $message) {
-      ob_start();
-
-      include __DIR__ . '/../Views/components/Message.php';
-
-      array_push($messageHtmls, ob_get_clean());
-    }
-
-    self::json($messageHtmls);
-  }
-
-  public static function sendMessage(string $channelId, array $data): void
+  public static function create(string $channelId, array $data): void
   {
     $currentUser = Session::getCurrentUser();
 
@@ -150,5 +78,4 @@ class ChatController extends Controller
       self::json(['error' => 'argh'], 500);
     }
   }
-
 }

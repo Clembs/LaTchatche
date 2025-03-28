@@ -9,25 +9,7 @@ use Bramus\Router\Router;
 $router = new Router();
 
 $router->get('/', function () {
-  ChatController::home();
-});
-
-$router->get('/chats/(\d+)', function (int $channelId) {
-  ChatController::channel($channelId);
-});
-
-$router->post('/chats/(\d+)/send-message', function (int $channelId) {
-  ChatController::sendMessage($channelId, $_POST);
-});
-
-$router->get('/chats/(\d+)/messages', function (int $channelId) {
-  $json = isset($_GET['json']) && $_GET['json'] === 'true';
-
-  ChatController::getLastMessages(
-    $channelId,
-    $_GET['lastMessageId'] ?? null,
-    $json
-  );
+  ChatController::homePage();
 });
 
 $router->get('/login', function () {
@@ -47,11 +29,30 @@ $router->post('/register', function () {
 });
 
 $router->get('/channels', function () {
-  ChannelController::publicChannels();
+  ChannelController::publicChannelsPage();
 });
 
-$router->post('/channels/create', function () {
-  ChannelController::createChannel($_POST);
+$router->post('/channels', function () {
+  ChannelController::create($_POST);
+});
+
+$router->get('/channels/(\d+)', function (int $channelId) {
+  ChannelController::channelPage($channelId);
+});
+
+$router->post('/channels/(\d+)/messages', function (int $channelId) {
+  ChatController::create($channelId, $_POST);
+});
+
+$router->get('/channels/(\d+)/messages', function (int $channelId) {
+  $lastMessageId = $_GET['lastMessageId'] ?? null;
+  $jsonMode = isset($_GET['json']) && $_GET['json'] === 'true';
+
+  ChannelController::getMessages(
+    $channelId,
+    $lastMessageId,
+    $jsonMode
+  );
 });
 
 $router->get('/channels/(\d+)/invite', function (int $channelId) {
@@ -59,11 +60,11 @@ $router->get('/channels/(\d+)/invite', function (int $channelId) {
 });
 
 $router->get('/channels/(\d+)/join', function (int $channelId) {
-  ChannelController::joinChannelById($channelId);
+  ChannelController::join($channelId);
 });
 
 $router->get('/join/(\w+)', function (string $inviteToken) {
-  ChannelController::joinChannelByToken($inviteToken);
+  ChannelController::joinWithToken($inviteToken);
 });
 
 $router->set404(function () {

@@ -20,7 +20,7 @@
     </p>
   </div>
 
-  <form id="channel-form" method="post" action="/channels/create">
+  <form id="channel-form" method="post" action="/channels">
     <label for="name" class="input full">
       <div class="label">
         Nom du salon (préfixé par un #)
@@ -46,7 +46,7 @@
 
 <?php ob_start(); ?>
 
-<style data-file="chat/dialog">
+<style data-file="channels/dialog">
   #create-channel-dialog {
     flex-direction: column;
     gap: 1rem;
