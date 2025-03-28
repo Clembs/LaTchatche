@@ -39,18 +39,30 @@ Le projet utilise une architecture MVC (Modèle-Vue-Contrôleur) :
 
 ## Configuration
 
-Une base de données PostgreSQL est nécessaire pour faire fonctionner le projet. Installez le module PDO PGSQL pour pouvoir utiliser PostgreSQL avec PHP.
+Une base de données MySQL est nécessaire pour faire fonctionner le projet. Installez ou activez le module PDO MySQL pour pouvoir l'utiliser avec PHP.
 
-Ensuite, exécutez le script `./sql/create-tables.sql` pour créer les tables nécessaires.
+Ensuite, exécutez le script `./sql/schema.sql` pour créer les tables nécessaires.
 
 Enfin, créez un fichier `config.ini` à la racine qui contient les informations suivantes pour se connecter à la base de données :
 
 ```ini
 [database]
 driver = "pgsql"
-host = [hôte]
-port = [port]
-database = [base de données]
-username = [utilisateur]
-password = [mot de passe]
+host = "URL de l'hôte"
+port = numéro de port
+database = "nom de la base de données"
+username = "nom d'utilisateur"
+password = "mot de passe"
+```
+
+Par exemple :
+
+```ini
+[database]
+driver = "mysql"
+host = "localhost"
+port = 3306
+database = "latchatche"
+username = "root"
+password = "ontchatchebeaucoup"
 ```
