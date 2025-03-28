@@ -46,12 +46,10 @@ $router->post('/channels/(\d+)/messages', function (int $channelId) {
 
 $router->get('/channels/(\d+)/messages', function (int $channelId) {
   $lastMessageId = $_GET['lastMessageId'] ?? null;
-  $jsonMode = isset($_GET['json']) && $_GET['json'] === 'true';
 
   ChannelController::getMessages(
     $channelId,
-    $lastMessageId,
-    $jsonMode
+    $lastMessageId
   );
 });
 

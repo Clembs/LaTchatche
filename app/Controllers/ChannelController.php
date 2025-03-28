@@ -247,7 +247,7 @@ class ChannelController extends Controller
   /**
    * Récupère les derniers messages pour un salon donné et les renvoie en un tableau de chaînes HTML.
    */
-  public static function getMessages(string $channelId, ?string $lastMessageId, bool $json = false): void
+  public static function getMessages(int $channelId, ?string $lastMessageId): void
   {
     $currentUser = Session::getCurrentUser();
 
@@ -258,11 +258,6 @@ class ChannelController extends Controller
 
     $messages = Message::findAllForChannel($channelId, $lastMessageId ? (int) $lastMessageId : null);
     $messages = array_reverse($messages);
-
-    if ($json) {
-      self::json($messages);
-      return;
-    }
 
     $messageHtmls = [];
 
