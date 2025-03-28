@@ -16,7 +16,7 @@ abstract class Controller
    * @param string $title Le titre de la page (affiché dans l'onglet du navigateur)
    * @param array $data Un tableau associatif de données à extraire et rendre disponible dans la vue
    */
-  public static function render(string $view, string $title, $data = [])
+  public static function render(string $view, string $title, array $data = [])
   {
     extract($data);
 
@@ -47,12 +47,13 @@ abstract class Controller
    * Envoie une réponse JSON au client
    * 
    * @param \JsonSerializable|array $data Les données à encoder en JSON
+   * @param int $code Le code HTTP de la réponse
    */
-  public static function json($data, $code = 200)
+  public static function json(\JsonSerializable|array $data, int $code = 200)
   {
-    http_response_code($code);
-    header('Content-Type: application/json;');
+    header('Content-Type: application/json', true, $code);
     echo json_encode($data);
+    exit;
   }
 
   /**
