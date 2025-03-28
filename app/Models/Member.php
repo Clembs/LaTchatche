@@ -96,6 +96,16 @@ class Member extends Model
     );
   }
 
+  public static function isMember(int $channelId, int $userId): bool
+  {
+    $pdo = Database::getPDO();
+    $query = $pdo->prepare('SELECT * FROM members WHERE channel_id = :channelId AND user_id = :userId');
+    $query->execute(['channelId' => $channelId, 'userId' => $userId]);
+    $res = $query->fetch();
+
+    return $res !== false;
+  }
+
   public static function create(int $userId, int $channelId): Member
   {
     $pdo = Database::getPDO();
