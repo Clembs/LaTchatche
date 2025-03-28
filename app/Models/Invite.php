@@ -93,9 +93,9 @@ class Invite extends Model
   {
     return [
       'id' => $this->id,
-      'channelId' => $this->channelId,
+      'channel_id' => $this->channelId,
       'token' => $this->token,
-      'expiresAt' => $this->expiresAt->format('Y-m-d H:i:s'),
+      'expires_at' => $this->expiresAt->format('Y-m-d H:i:s'),
     ];
   }
 }

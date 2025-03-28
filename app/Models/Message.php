@@ -204,9 +204,9 @@ class Message extends Model
       'id' => $this->id,
       'type' => $this->type->value,
       'content' => $this->content,
-      'createdAt' => $this->createdAt->format('Y-m-d H:i:s'),
-      'authorId' => $this->authorId,
-      'channelId' => $this->channelId,
+      'created_at' => $this->createdAt->format('Y-m-d H:i:s'),
+      'author_id' => $this->authorId,
+      'channel_id' => $this->channelId,
       'author' => $this->author->jsonSerialize(),
     ];
   }

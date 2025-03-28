@@ -133,8 +133,8 @@ class Member extends Model
   {
     return [
       'id' => $this->id,
-      'userId' => $this->userId,
-      'channelId' => $this->channelId,
+      'user_id' => $this->userId,
+      'channel_id' => $this->channelId,
     ];
   }
 }

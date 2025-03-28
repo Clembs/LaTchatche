@@ -146,7 +146,7 @@ class User extends Model
     return [
       'id' => $this->id,
       'username' => $this->username,
-      'createdAt' => $this->createdAt->format('Y-m-d H:i:s'),
+      'created_at' => $this->createdAt->format('Y-m-d H:i:s'),
     ];
   }
 }
