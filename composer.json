@@ -5,5 +5,7 @@
       "App\\": "app/"
     }
   },
-  "require": {}
+  "require": {
+    "bramus/router": "~1.6"
+  }
 }

@@ -1,86 +1,73 @@
 <?php
-// Routeur basique
-
 require '../vendor/autoload.php';
+
 use App\Controllers\AuthController;
 use App\Controllers\ChannelController;
 use App\Controllers\ChatController;
+use Bramus\Router\Router;
 
-// On retire le premier et dernier slash puis on explose l'URI en parties
-$cleanUri = trim(rtrim($_SERVER['REQUEST_URI'], '/'), '/');
-// On retire les paramètres de requête, les ancres, etc
-$cleanUri = explode('?', $cleanUri)[0];
-$cleanUri = explode('#', $cleanUri)[0];
-$uriParts = explode('/', $cleanUri);
+$router = new Router();
 
-switch ($uriParts[0]) {
-  case '':
-  case 'chats': {
-    $channelId = $uriParts[1] ?? null;
-    $action = $uriParts[2] ?? null;
+$router->get('/', function () {
+  ChatController::home();
+});
 
-    if ($channelId && $channelId !== '') {
-      if ($action === 'send-message' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        ChatController::sendMessage((int) $channelId, $_POST);
-        break;
-      }
+$router->get('/chats/(\d+)', function (int $channelId) {
+  ChatController::channel($channelId);
+});
 
-      if ($action === 'messages' && $_SERVER['REQUEST_METHOD'] === 'GET') {
-        $json = isset($_GET['json']) && $_GET['json'] === 'true';
+$router->post('/chats/(\d+)/send-message', function (int $channelId) {
+  ChatController::sendMessage($channelId, $_POST);
+});
 
-        ChatController::getLastMessages(
-          $channelId,
-          $_GET['lastMessageId'] ?? null,
-          $json
-        );
-        break;
-      }
+$router->get('/chats/(\d+)/messages', function (int $channelId) {
+  $json = isset($_GET['json']) && $_GET['json'] === 'true';
 
-      ChatController::channel((int) $channelId);
-    } else {
-      ChatController::home();
-    }
-    break;
-  }
-  case 'login':
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-      AuthController::login($_POST);
-    } else {
-      AuthController::loginPage($_GET['error'] ?? null);
-    }
-    break;
-  case 'register':
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-      AuthController::register($_POST);
-    } else {
-      AuthController::registerPage($_GET['error'] ?? null);
-    }
-    break;
-  case 'channels': {
-    if (isset($uriParts[1]) && $uriParts[1] === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-      ChannelController::createChannel($_POST);
-      break;
-    }
+  ChatController::getLastMessages(
+    $channelId,
+    $_GET['lastMessageId'] ?? null,
+    $json
+  );
+});
 
-    if (isset($uriParts[1]) && isset($uriParts[2]) && $uriParts[2] === 'invite' && $_SERVER['REQUEST_METHOD'] === 'GET') {
-      ChannelController::invite((int) $uriParts[1]);
-      break;
-    }
+$router->get('/login', function () {
+  AuthController::loginPage($_GET['error'] ?? null);
+});
 
-    if (isset($uriParts[1]) && isset($uriParts[2]) && $uriParts[2] === 'join' && $_SERVER['REQUEST_METHOD'] === 'GET') {
-      ChannelController::joinChannelById((int) $uriParts[1]);
-      break;
-    }
+$router->post('/login', function () {
+  AuthController::login($_POST);
+});
 
-    ChannelController::publicChannels();
-    break;
-  }
-  case 'join': {
-    if (isset($uriParts[1]) && $_SERVER['REQUEST_METHOD'] === 'GET') {
-      ChannelController::joinChannelByToken($uriParts[1]);
-      break;
-    }
-  }
-  default:
-    require_once '../app/Views/404.php';
-}
+$router->get('/register', function () {
+  AuthController::registerPage($_GET['error'] ?? null);
+});
+
+$router->post('/register', function () {
+  AuthController::register($_POST);
+});
+
+$router->get('/channels', function () {
+  ChannelController::publicChannels();
+});
+
+$router->post('/channels/create', function () {
+  ChannelController::createChannel($_POST);
+});
+
+$router->get('/channels/(\d+)/invite', function (int $channelId) {
+  ChannelController::invite($channelId);
+});
+
+$router->get('/channels/(\d+)/join', function (int $channelId) {
+  ChannelController::joinChannelById($channelId);
+});
+
+$router->get('/join/(\w+)', function (string $inviteToken) {
+  ChannelController::joinChannelByToken($inviteToken);
+});
+
+$router->set404(function () {
+  require_once '../app/Views/404.php';
+});
+
+$router->run();
