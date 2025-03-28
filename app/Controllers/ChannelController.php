@@ -84,8 +84,8 @@ class ChannelController extends Controller
       return;
     }
 
-    // si le salon n'est pas public ou qu'il n'appartient pas à l'utilisateur
-    if ($channel->type !== ChannelType::public || $channel->ownerId !== $currentUser->id) {
+    // si le salon n'est pas public et qu'il n'appartient pas à l'utilisateur
+    if ($channel->type !== ChannelType::public && $channel->ownerId !== $currentUser->id) {
       self::json(['error' => 'Vous n\'avez pas les droits pour inviter des membres dans ce salon.'], 403);
       return;
     }
@@ -127,6 +127,14 @@ class ChannelController extends Controller
 
     if (!$channel) {
       self::notFound();
+      return;
+    }
+
+    $members = Member::findAllForChannel($channel->id);
+
+    // si l'utilisateur est déjà membre du salon
+    if (array_reduce($members, fn($acc, $member) => $acc || $member->userId === $currentUser->id, false)) {
+      header("Location: /chats/{$channel->id}");
       return;
     }
 
@@ -174,8 +182,16 @@ class ChannelController extends Controller
 
     $channel = Channel::findById($channelId);
 
-    if (!$channel || $channel->type !== ChannelType::public ) {
+    if (!$channel || $channel->type !== ChannelType::public) {
       self::notFound();
+      return;
+    }
+
+    $members = Member::findAllForChannel($channel->id);
+
+    // si l'utilisateur est déjà membre du salon
+    if (array_reduce($members, fn($acc, $member) => $acc || $member->userId === $currentUser->id, false)) {
+      header("Location: /chats/{$channel->id}");
       return;
     }
 
