@@ -2,6 +2,9 @@
 
 namespace App\Core;
 
+use App\Models\Session;
+use App\Models\User;
+
 abstract class ApiController extends Controller
 {
   /**
@@ -30,5 +33,28 @@ abstract class ApiController extends Controller
   {
     self::error('Unauthorized', 'You must be logged in to access this resource', 401);
     exit;
+  }
+
+  /**
+   * Récupère l'utilisateur connecté à partir du jeton de session
+   */
+  public static function getCurrentUser(): ?User
+  {
+    // on récupère le jeton de session dans l'en-tête Authorization
+    $authToken = self::getAuthToken();
+    if (!$authToken) {
+      return null;
+    }
+    return Session::findByToken($authToken);
+  }
+
+  /**
+   * Récupère le jeton de session
+   */
+  public static function getAuthToken(): ?string
+  {
+    $headers = getallheaders();
+    $authToken = $headers['Authorization'] ?? null;
+    return $authToken;
   }
 }

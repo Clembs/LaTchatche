@@ -7,7 +7,6 @@ use App\Models\Channel;
 use App\Models\ChannelType;
 use App\Models\Member;
 use App\Models\Message;
-use App\Models\Session;
 
 class ChannelApiController extends ApiController
 {
@@ -37,7 +36,7 @@ class ChannelApiController extends ApiController
       self::json($channel);
     }
 
-    $currentUser = Session::getCurrentUser();
+    $currentUser = self::getCurrentUser();
 
     if (!$currentUser) {
       self::error('Unauthorized', 'You must be logged in to access this channel', 401);
@@ -55,10 +54,16 @@ class ChannelApiController extends ApiController
    */
   public static function getMessages(int $id, ?int $lastMessageId): void
   {
-    $currentUser = Session::getCurrentUser();
+    $channel = Channel::findById($id);
 
-    if (!$currentUser) {
-      self::unauthorized();
+    if (!$channel) {
+      self::notFound();
+    }
+
+    $currentUser = self::getCurrentUser();
+
+    if ($channel->type !== ChannelType::public && !Member::isMember($channel->id, $currentUser->id)) {
+      self::error('Unauthorized', 'You must be a member of this channel to access it', 403);
     }
 
     $messages = Message::findAllForChannel($id, $lastMessageId);

@@ -23,11 +23,10 @@ class Session
     return $sessionToken;
   }
 
-
   /**
    * Crée une nouvelle session pour un utilisateur donné
    */
-  public static function create(User $user): void
+  public static function create(User $user): string
   {
     // self::initSession();
     $sessionToken = session_create_id();
@@ -68,6 +67,7 @@ class Session
       ]
     );
 
+    return $sessionToken;
   }
 
   /**
@@ -184,5 +184,46 @@ class Session
       'httponly' => true,
       'samesite' => 'Strict'
     ]);
+  }
+
+  /**
+   * Retourne l'utilisateur correspondant au jeton de session
+   */
+  public static function findByToken(string $token): ?User
+  {
+    $pdo = Database::getPDO();
+    $query = $pdo->prepare(
+      "SELECT u.id as user_id,
+        u.username as user_username,
+        u.password as user_password,
+        u.created_at as user_created_at
+        FROM users AS u 
+        JOIN sessions AS s ON u.id = s.user_id 
+        WHERE s.token = :token"
+    );
+
+    $query->execute(['token' => $token]);
+    $res = $query->fetch();
+
+    if (!$res) {
+      return null;
+    }
+
+    return new User(
+      $res['user_id'],
+      $res['user_username'],
+      $res['user_password'],
+      new \DateTime($res['user_created_at']),
+    );
+  }
+
+  /**
+   * Supprime la session à partir d'un jeton
+   */
+  public static function delete(int $token): void
+  {
+    $pdo = Database::getPDO();
+    $query = $pdo->prepare('DELETE FROM sessions WHERE token = :token');
+    $query->execute(['token' => $token]);
   }
 }
