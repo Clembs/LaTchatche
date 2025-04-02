@@ -1,6 +1,6 @@
 <?php
 // Routeur pour l'API
-require '../../vendor/autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 use App\Controllers\Api\AuthApiController;
 use App\Controllers\Api\ChannelApiController;

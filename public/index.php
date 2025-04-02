@@ -1,5 +1,5 @@
 <?php
-require '../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use App\Controllers\AuthController;
 use App\Controllers\ChannelController;
@@ -66,7 +66,7 @@ $router->get('/join/(\w+)', function (string $inviteToken) {
 });
 
 $router->set404(function () {
-  require_once '../app/Views/404.php';
+  require_once __DIR__ . '/../app/Views/404.php';
 });
 
 $router->run();
