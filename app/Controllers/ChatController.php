@@ -63,9 +63,8 @@ class ChatController extends Controller
 
     try {
       $message = Message::create(
-        messageType: MessageType::default ,
+        type: MessageType::default ,
         content: $data['content'],
-        authorId: $authorId,
         channelId: $channelId,
         author: User::findById($authorId),
       );

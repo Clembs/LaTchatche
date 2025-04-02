@@ -31,7 +31,7 @@ class Channel extends Model
     $query = $pdo->prepare(
       'SELECT c.id, c.name, c.created_at, c.type, c.owner_id,
         COUNT(DISTINCT mb.user_id) AS member_count,
-        COUNT(msg.id) AS message_count,
+        COUNT(DISTINCT msg.id) AS message_count,
         u.username AS owner_username
       FROM channels AS c
       LEFT JOIN members AS mb ON c.id = mb.channel_id
@@ -69,7 +69,7 @@ class Channel extends Model
     $query = $pdo->query(
       'SELECT c.id, c.name, c.created_at, c.type, c.owner_id,
         COUNT(DISTINCT mb.user_id) AS member_count,
-        COUNT(msg.id) AS message_count,
+        COUNT(DISTINCT msg.id) AS message_count,
         u.username AS owner_username
       FROM channels AS c
       LEFT JOIN members AS mb ON c.id = mb.channel_id
@@ -109,19 +109,24 @@ class Channel extends Model
     $pdo = Database::getPDO();
     $query = $pdo->prepare(
       'SELECT c.id, c.name, c.created_at, c.type, c.owner_id,
-        COUNT(DISTINCT mb.user_id) AS member_count,
-        COUNT(msg.id) AS message_count,
+          (SELECT COUNT(DISTINCT user_id)
+          FROM members AS mb
+          WHERE mb.channel_id = c.id) AS member_count,
+        COUNT(DISTINCT msg.id) AS message_count,
         u.username AS owner_username
       FROM channels AS c
-      LEFT JOIN members AS mb ON c.id = mb.channel_id
       LEFT JOIN messages AS msg ON c.id = msg.channel_id
       LEFT JOIN users AS u ON c.owner_id = u.id
-      WHERE mb.user_id = :userid
-      GROUP BY c.id, c.name, c.created_at, c.type, c.owner_id, u.username'
+      WHERE EXISTS (
+        SELECT *
+        FROM members AS mb
+        WHERE mb.channel_id = c.id AND mb.user_id = :user_id
+      )
+      GROUP BY c.id'
     );
 
     $query->execute([
-      'userid' => $userId,
+      'user_id' => $userId,
     ]);
     $res = $query->fetchAll();
 

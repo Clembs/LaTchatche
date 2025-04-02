@@ -142,7 +142,7 @@ class Message extends Model
     return [];
   }
 
-  public static function create(MessageType $messageType, string $content, int $authorId, int $channelId, ?User $author): Message
+  public static function create(MessageType $type, string $content, int $channelId, ?User $author): Message
   {
     $pdo = Database::getPDO();
     $query = $pdo->prepare(
@@ -154,19 +154,19 @@ class Message extends Model
     $createdAt = new \DateTime();
 
     $query->execute([
-      'type' => $messageType->value,
+      'type' => $type->value,
       'content' => $content,
       'created_at' => $createdAt->format('Y-m-d H:i:s'),
-      'author_id' => $authorId,
+      'author_id' => $author->id,
       'channel_id' => $channelId,
     ]);
 
     return new Message(
       id: (int) $pdo->lastInsertId(),
-      type: $messageType,
+      type: $type,
       content: $content,
       createdAt: $createdAt,
-      authorId: $authorId,
+      authorId: $author->id,
       channelId: $channelId,
       author: $author
     );
