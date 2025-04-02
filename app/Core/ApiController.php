@@ -54,7 +54,11 @@ abstract class ApiController extends Controller
   public static function getAuthToken(): ?string
   {
     $headers = getallheaders();
-    $authToken = $headers['Authorization'] ?? null;
+    $authToken = $headers['authorization'] ?? $headers['Authorization'] ?? null;
+    // on retire le préfixe "Bearer " si présent
+    if ($authToken && str_contains($authToken, 'Bearer ')) {
+      $authToken = substr($authToken, strlen('Bearer '));
+    }
     return $authToken;
   }
 }
