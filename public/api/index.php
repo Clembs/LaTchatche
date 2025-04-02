@@ -10,6 +10,10 @@ use Bramus\Router\Router;
 $router = new Router();
 
 $router->get('/channels', function () {
+  ChannelApiController::userChannels();
+});
+
+$router->get('/channels/public', function () {
   ChannelApiController::publicChannels();
 });
 
@@ -21,6 +25,16 @@ $router->get('/channels/(\d+)/messages', function (int $id) {
   $lastMessageId = $_GET['lastMessageId'] ?? null;
 
   ChannelApiController::getMessages($id, $lastMessageId);
+});
+
+$router->post('/channels/(\d+)/messages', function (int $channelId) {
+  $data = json_decode(file_get_contents('php://input'), true);
+
+  if (json_last_error() !== JSON_ERROR_NONE) {
+    ApiController::error('Bad Request', 'Invalid JSON', 400);
+  }
+
+  ChannelApiController::createMessage($channelId, $data);
 });
 
 $router->post('/login', function () {
