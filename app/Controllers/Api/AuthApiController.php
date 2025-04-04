@@ -59,4 +59,33 @@ class AuthApiController extends ApiController
 
     self::json($currentUser);
   }
+
+
+  /**
+   * Crée un compte utilisateur.
+   */
+  public static function register(array $data): void
+  {
+    // Vérifie que les données sont valides
+    if (!isset($data['username']) || !isset($data['password'])) {
+      self::error('Bad Request', 'Missing fields', 400);
+    }
+    
+    // Vérifie que le mot de passe correspond au pattern
+    if (!preg_match('/(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}/', $data['password'])) {
+      self::error('Bad Request', 'Password must contain at least 8 characters including a lowercase and uppercase letter and one digit.', 400);
+    }
+    
+    // Vérifie que l'utilisateur n'existe pas déjà
+    if (User::findByUsername($data['username'])) {
+      self::error('Bad Request', 'This username is already taken.', 400);
+    }
+
+    // Crée l'utilisateur
+    $user = User::create($data['username'], $data['password']);
+    
+    $sessionToken = Session::create($user);
+
+    self::json(['token' => $sessionToken]);
+  }
 }
