@@ -35,10 +35,6 @@ class ChannelApiController extends ApiController
 
     $channels = Channel::findAllForUser($currentUser->id);
 
-    if (!$channels) {
-      self::notFound();
-    }
-
     self::json(array_values($channels));
   }
 
