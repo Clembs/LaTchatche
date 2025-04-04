@@ -2,6 +2,13 @@
 
 Cette application web permet de discuter instantanément avec d'autres utilisateurs.
 
+## Accéder en ligne
+
+https://latchatche.clembs.com
+
+Vous pouvez vous créer un compte puis créer un salon où accéder aux salons publics d'autres utilisateurs.
+
+
 ## Prérequis
 
 - [PHP](https://www.php.net/downloads.php)
