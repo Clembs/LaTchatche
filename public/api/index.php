@@ -47,6 +47,14 @@ $router->post('/login', function () {
   AuthApiController::login($data);
 });
 
+$router->post('/channels', function() {
+  $data = json_decode(file_get_contents('php://input'), true);
+  if (json_last_error() !== JSON_ERROR_NONE) {
+    ApiController::error('Bad Request', 'Invalid JSON', 400);
+  }
+  ChannelApiController::createChannel($data);
+});
+
 $router->post('/register', function() {
   $data = json_decode(file_get_contents('php://input'), true);
 
