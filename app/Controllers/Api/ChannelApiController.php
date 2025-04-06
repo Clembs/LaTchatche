@@ -19,7 +19,16 @@ class ChannelApiController extends ApiController
   {
     $channels = Channel::findAllPublic();
 
-    self::json(array_values($channels));
+    // for each channel, check if the user is a member
+    $currentUser = self::getCurrentUser();
+
+    self::json(array_values(array_map(
+      fn($channel) => [
+        ...$channel->jsonSerialize(),
+        'is_member' => $currentUser ? Member::isMember($channel->id, $currentUser->id) : false,
+      ],
+      $channels
+    )));
   }
 
   /**
@@ -35,7 +44,13 @@ class ChannelApiController extends ApiController
 
     $channels = Channel::findAllForUser($currentUser->id);
 
-    self::json(array_values($channels));
+    self::json(array_values(array_map(
+      fn($channel) => [
+        ...$channel->jsonSerialize(),
+        'is_member' => true,
+      ],
+      $channels
+    )));
   }
 
   /**
@@ -163,6 +178,42 @@ class ChannelApiController extends ApiController
     }
 
     // on rejoint son propre salon
+    Member::create(
+      userId: $currentUser->id,
+      channelId: $channel->id
+    );
+
+    self::json([
+      ...$channel->jsonSerialize(),
+      'is_member' => true
+    ]);
+  }
+
+  /**
+   * Rejoint un salon public
+   */
+  public static function joinChannel(int $channelId): void
+  {
+    $currentUser = self::getCurrentUser();
+
+    if (!$currentUser) {
+      self::unauthorized();
+    }
+
+    $channel = Channel::findById($channelId);
+
+    if (!$channel) {
+      self::notFound();
+    }
+
+    if ($channel->type !== ChannelType::public) {
+      self::error('Bad Request', 'Channel is not public', 400);
+    }
+
+    if (Member::isMember($channel->id, $currentUser->id)) {
+      self::error('Bad Request', 'You are already a member of this channel', 400);
+    }
+
     Member::create(
       userId: $currentUser->id,
       channelId: $channel->id

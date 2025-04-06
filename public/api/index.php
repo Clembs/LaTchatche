@@ -47,6 +47,10 @@ $router->post('/channels/(\d+)/messages', function (int $channelId) {
   ChannelApiController::createMessage($channelId, $data);
 });
 
+$router->post('/channels/(\d+)/join', function (int $channelId) {
+  ChannelApiController::joinChannel($channelId);
+});
+
 $router->post('/login', function () {
   $data = json_decode(file_get_contents('php://input'), true);
 
