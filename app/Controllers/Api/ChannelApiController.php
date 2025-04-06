@@ -162,6 +162,12 @@ class ChannelApiController extends ApiController
       self::error('Internal Server Error', 'Failed to create channel', 500);
     }
 
+    // on rejoint son propre salon
+    Member::create(
+      userId: $currentUser->id,
+      channelId: $channel->id
+    );
+
     self::json($channel);
   }
 }
