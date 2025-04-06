@@ -75,7 +75,7 @@ class Channel extends Model
       LEFT JOIN members AS mb ON c.id = mb.channel_id
       LEFT JOIN messages AS msg ON c.id = msg.channel_id
       LEFT JOIN users AS u ON c.owner_id = u.id
-      WHERE c.type = "public"
+      WHERE c.type = \'public\'
       GROUP BY c.id, c.name, c.created_at, c.type, c.owner_id, u.username'
     );
 
