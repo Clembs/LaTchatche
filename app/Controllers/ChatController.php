@@ -24,13 +24,7 @@ class ChatController extends Controller
       return;
     }
 
-    $userChannels = Channel::findAllForUser($currentUser->id);
-
-    self::render('app/channels/home', 'Accueil', [
-      'channel' => null,
-      'userChannels' => $userChannels,
-      'currentUser' => $currentUser
-    ]);
+    header('Location: /channels');
   }
 
   /**
