@@ -123,4 +123,32 @@ class ChannelApiController extends ApiController
 
     self::json($message);
   }
+
+  /**
+   * Crée un salon et le renvoie en JSON
+   */
+  public static function createChannel(?array $data): void
+  {
+    $currentUser = self::getCurrentUser();
+
+    if (!$currentUser) {
+      self::unauthorized();
+    }
+
+    if (!isset($data['name']) || empty(trim($data['name']))) {
+      self::error('Bad Request', 'Channel name is required', 400);
+    }
+
+    $channel = Channel::create(
+      name: $data['name'],
+      type: ChannelType::public ,
+      ownerId: $currentUser->id
+    );
+
+    if (!$channel) {
+      self::error('Internal Server Error', 'Failed to create channel', 500);
+    }
+
+    self::json($channel);
+  }
 }
