@@ -37,7 +37,7 @@ class Session
     $req = $linkpdo->prepare(
       "DELETE FROM sessions 
         WHERE user_id = :id 
-        OR expires_at <= CURRENT_TIMESTAMP"
+        AND expires_at <= CURRENT_TIMESTAMP"
     );
     $req->execute(['id' => $user->id]);
 
