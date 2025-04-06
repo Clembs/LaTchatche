@@ -139,8 +139,21 @@ class ChannelApiController extends ApiController
       self::error('Bad Request', 'Channel name is required', 400);
     }
 
+    if (strlen($data['name']) > 30) {
+      self::error('Bad Request', 'Channel name must be less than 30 characters', 400);
+    }
+
+    // le nom normalisé, càd sans caractères spéciaux et avec des tirets
+    $normalizedName = strtolower($data['name']);
+    // on retire les caractères spéciaux (en ne comptant pas les accents)
+    $normalizedName = preg_replace('/[^a-z0-9éèàêëôöîïùûüç\-_\s]/', '', $normalizedName);
+    // on remplace les espaces par des tirets
+    $normalizedName = preg_replace('/\s/', '-', $normalizedName);
+    // on retire les tirets en fin de chaîne
+    $normalizedName = rtrim($normalizedName, '-');
+
     $channel = Channel::create(
-      name: $data['name'],
+      name: $normalizedName,
       type: ChannelType::public ,
       ownerId: $currentUser->id
     );
